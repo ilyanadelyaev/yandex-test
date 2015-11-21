@@ -6,6 +6,8 @@ from .models import Station
 from .models import Direction
 from .models import Route
 
+from . import logic
+
 
 def index(request):
     return render(request, 'index.html', {})
@@ -43,9 +45,12 @@ def results(request):
         start_station = Station.objects.get(pk=start_station)
         end_station = Station.objects.get(pk=end_station)
         #
+        route = logic.search_route(start_station.id, end_station.id)
+        #
         return render(request, 'view/search_results.html', {
             'start_station': start_station,
             'end_station': end_station,
+            'route': route,
         })
 
 

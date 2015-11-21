@@ -6,4 +6,15 @@
     <div class="bg-success"><strong>Start station: </strong>{{ start_station.name }}</div>
     <div class="bg-success"><strong>End station: </strong>{{ end_station.name }}</div>
 
+    {% if route %}
+        <h3>Route</h3>
+        <ul>
+        {% for s, d, e in route %}
+            <li>{{ s }}</li>
+            <li>{{ d }}</li>
+            <li>{{ e }}</li>
+        {% endfor %}
+        </ul>
+    {% endif %}
+
 {% endblock %}

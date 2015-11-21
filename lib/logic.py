@@ -50,4 +50,16 @@ def search_route(start, end):
     _process(start, nodes[:])
 
     # calculate chunk times here
-    return min(paths, key=len)
+    path = min(paths, key=len)
+
+    # load objects
+    pp = []
+    for p in path:
+        s, d, e = p
+        pp.append((
+            Station.objects.get(pk=s),
+            Direction.objects.get(pk=d),
+            Station.objects.get(pk=e),
+        ))
+
+    return pp
