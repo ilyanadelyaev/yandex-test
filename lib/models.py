@@ -7,12 +7,21 @@ class Station(models.Model):
     def __unicode__(self):
         return '{} [{}]'.format(self.name, self.id)
 
+    def directionstation_list(self):
+        return self.directionstation_set.all()
+
 
 class Direction(models.Model):
     name = models.CharField(max_length=60)
 
     def __unicode__(self):
         return '{} [{}]'.format(self.name, self.id)
+
+    def directionstation_list(self):
+        return self.directionstation_set.all()
+
+    def route_list(self):
+        return self.route_set.all()
 
 
 class DirectionStation(models.Model):

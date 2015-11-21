@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h2>Search</h2>
+    <div><a class="btn btn-primary" href="{% url 'lib:search' %}">Go</a></div>
+
+    <h2>Routes</h2>
+    <div><a class="btn btn-success" href="{% url 'lib:routes_index' %}">Go</a></div>
+
+    <h2>Stations</h2>
+    <div><a class="btn btn-success" href="{% url 'lib:stations_index' %}">Go</a></div>
+    <h2>Directions</h2>
+    <div><a class="btn btn-success" href="{% url 'lib:directions_index' %}">Go</a></div>
+{% endblock %}

@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h2>{{ route.name }}</h2>
+    <div><a href="{% url 'lib:routes_index' %}">Go to list</a></div>
+    <h3>Route</h3>
+    <div>
+        Direction:
+        <a href="{% url 'lib:directions_detail' route.direction.id %}">{{ route.direction.name }}</a>
+    </div>
+    <div>{{ route.id }}</div>
+{% endblock %}

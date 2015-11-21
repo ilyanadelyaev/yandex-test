@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h2>Routes</h2>
+    <ul>
+    {% for r in routes %}
+        <li><a href="{% url 'lib:routes_detail' r.id %}">{{ r.name }}</a></li>
+    {% endfor %}
+    </ul>
+{% endblock %}

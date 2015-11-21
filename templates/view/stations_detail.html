@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h2>{{ station.name }}</h2>
+    <div><a href="{% url 'lib:stations_index' %}">Go to list</a></div>
+    <h3>Station</h3>
+    {% if directionstation_list %}
+        <h4>Directions</h4>
+        <ul>
+        {% for ds in directionstation_list %}
+            <li><a href="{% url 'lib:directions_detail' ds.direction.id %}"
+                >{{ ds.direction.name }}</a></li>
+        {% endfor %}
+        </ul>
+    {% endif %}
+    <div>{{ station.id }}</div>
+{% endblock %}

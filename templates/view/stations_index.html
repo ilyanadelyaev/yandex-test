@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h2>Stations</h2>
+    <ul>
+    {% for s in stations %}
+        <li><a href="{% url 'lib:stations_detail' s.id %}">{{ s.name }}</a></li>
+    {% endfor %}
+    </ul>
+{% endblock %}
