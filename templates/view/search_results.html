@@ -1,20 +1,31 @@
 {% extends "base.html" %}
 
+{% load app_filters %}
+
 {% block content %}
     <h2>Search results</h2>
-
-    <div class="bg-success"><strong>Start station: </strong>{{ start_station.name }}</div>
-    <div class="bg-success"><strong>End station: </strong>{{ end_station.name }}</div>
-
     {% if route %}
-        <h3>Route</h3>
-        <ul>
-        {% for s, d, e in route %}
-            <li>{{ s }}</li>
-            <li>{{ d }}</li>
-            <li>{{ e }}</li>
-        {% endfor %}
-        </ul>
+        <h3>Routes on "{{ weekday | weekday }}"</h3>
+        <table class="table table-striped">
+            <tr>
+                <th>Start station</th>
+                <th>End station</th>
+                <th>Direction</th>
+                <th>Routes</th>
+            </tr>
+            {% for s, e, d, rr in route %}
+                <tr>
+                    <td>{{ s }}</td>
+                    <td>{{ e }}</td>
+                    <td>{{ d }}</td>
+                    <td><ul>
+                        {% for r, t in rr %}
+                            <li>{{ r }} / {{ t }}</li>
+                        {% endfor %}
+                    </ul></td>
+                </tr>
+            {% endfor %}
+        </table>
     {% endif %}
 
 {% endblock %}

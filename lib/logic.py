@@ -71,7 +71,7 @@ def __find_routes(start, end, weekday):
     return cursor.fetchall()
 
 
-def search_route(start, end):
+def search_routes(start, end, weekday):
     nodes = __nodes()
 
     paths = []
@@ -89,22 +89,44 @@ def search_route(start, end):
             if pp in points:
                 continue
             if pp == end:
+                # TODO: if len(path = [n]) == 1: return
                 paths.append(path + [n])
             _process(pp, nodes[:], path + [n], points | set((pp,)))
 
     _process(start, nodes[:])
 
-    # calculate chunk times here
+    # TODO: give path size by time
     path = min(paths, key=len)
 
-    # load objects
+    # remove middle nodes from path
     pp = []
+    st, dr, ed = (None,) * 3
     for p in path:
         s, d, e = p
-        pp.append((
-            models.Station.objects.get(pk=s),
-            models.Direction.objects.get(pk=d),
-            models.Station.objects.get(pk=e),
-        ))
+        if dr is not None and dr != d:
+            pp.append((st, dr, ed))
+            st = s
+            dr = d
+        if dr is None:
+            dr = d
+        if st is None:
+            st = s
+        ed = e
+    pp.append((st, dr, ed))
 
-    return pp
+    # find suitable routes
+    routes = [(s, e, d, __find_routes(s, e, weekday)) for s, d, e in pp]
+
+    def __routes_with_models(routes):
+        ret = []
+        for i in routes:
+            s, e, d, rr = i
+            ret.append((
+                models.Station.objects.get(pk=s),
+                models.Station.objects.get(pk=e),
+                models.Direction.objects.get(pk=d),
+                [((models.Route.objects.get(pk=r), t)) for r, t in rr],
+            ))
+        return ret
+
+    return __routes_with_models(routes)

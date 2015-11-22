@@ -1,8 +1,8 @@
 {% extends "base.html" %}
 
-{% block content %}
-    {% load app_filters %}
+{% load app_filters %}
 
+{% block content %}
     <h2>{{ route.name }}</h2>
     <div><a href="{% url 'lib:routes_index' %}">Go to list</a></div>
     <h3>Route</h3>

@@ -7,6 +7,7 @@ from .models import Direction
 from .models import Route
 
 from . import logic
+from . import tools
 
 
 def index(request):
@@ -20,6 +21,7 @@ class InvalidSearchConditions(Exception):
 class SearchForm(forms.Form):
     start_station = forms.ModelChoiceField(queryset=Station.objects.all(), empty_label=None)
     end_station = forms.ModelChoiceField(queryset=Station.objects.all(), empty_label=None)
+    weekday = forms.ChoiceField(choices=tools.Weekday.choices)
 
 
 def search(request):
@@ -35,6 +37,7 @@ def search_results(request):
         end_station = request.GET['end_station']
         if start_station == end_station:
             raise InvalidSearchConditions('start_station = end_station')
+        weekday = request.GET['weekday']
     except (KeyError, InvalidSearchConditions, Station.DoesNotExist) as ex:
         form = SearchForm()
         return render(request, 'view/search.html', {
@@ -45,11 +48,10 @@ def search_results(request):
         start_station = Station.objects.get(pk=start_station)
         end_station = Station.objects.get(pk=end_station)
         #
-        route = logic.search_route(start_station.id, end_station.id)
+        route = logic.search_routes(start_station.id, end_station.id, weekday)
         #
         return render(request, 'view/search_results.html', {
-            'start_station': start_station,
-            'end_station': end_station,
+            'weekday': weekday,
             'route': route,
         })
 
