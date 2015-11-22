@@ -29,7 +29,7 @@ class Direction(models.Model):
 class DirectionStation(models.Model):
     direction = models.ForeignKey(Direction)
     station = models.ForeignKey(Station)
-    station_pos = models.PositiveSmallIntegerField()
+    position = models.PositiveSmallIntegerField()
 
 
 class Route(models.Model):

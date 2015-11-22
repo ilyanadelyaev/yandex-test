@@ -18,7 +18,7 @@ def __nodes():
             and
             ds1.direction_id = ds2.direction_id
             and
-            abs(ds1.station_pos - ds2.station_pos) = 1
+            abs(ds1.position - ds2.position) = 1
     """ % (
         DirectionStation._meta.db_table,
         DirectionStation._meta.db_table,
