@@ -29,7 +29,7 @@ def search(request):
     })
 
 
-def results(request):
+def search_results(request):
     try:
         start_station = request.GET['start_station']
         end_station = request.GET['end_station']
@@ -96,3 +96,9 @@ class RouteIndexView(generic.ListView):
 class RouteDetailView(generic.DetailView):
     model = Route
     template_name = 'view/routes_detail.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(RouteDetailView, self).get_context_data(**kwargs)
+        context['routestation_list'] = self.object.routestation_list()
+        context['timetable_list'] = self.object.timetable_list()
+        return context

@@ -1,6 +1,8 @@
 {% extends "base.html" %}
 
 {% block content %}
+    {% load app_filters %}
+
     <h2>{{ route.name }}</h2>
     <div><a href="{% url 'lib:routes_index' %}">Go to list</a></div>
     <h3>Route</h3>
@@ -8,5 +10,40 @@
         Direction:
         <a href="{% url 'lib:directions_detail' route.direction.id %}">{{ route.direction.name }}</a>
     </div>
-    <div>{{ route.id }}</div>
+    {% if timetable_list %}
+        <h4>Timetable</h4>
+        <ul>
+        {% for tt in timetable_list %}
+            <li>{{ tt.weekday | weekday }} - {{ tt.time }}</li>
+        {% endfor %}
+        </ul>
+    {% endif %}
+    {% if routestation_list %}
+        <h4>Stations</h4>
+        <table class="table table-striped">
+            <tr>
+                <th>#</th>
+                <th>Name</th>
+                <th>Wait time</th>
+                <th>Travel time</th>
+            </tr>
+            {% for rs in routestation_list %}
+                <tr>
+                    <td>
+                    {{ rs.position }}
+                    </td>
+                    <td>
+                    <a href="{% url 'lib:stations_detail' rs.station.id %}">{{ rs.station.name }}</a>
+                    </td>
+                    <td>
+                    {{ rs.wait_time }}
+                    </td>
+                    <td>
+                    {{ rs.move_time }}
+                    </td>
+                </tr>
+            {% endfor %}
+        </table>
+    {% endif %}
+    <div>Route ID: {{ route.id }}</div>
 {% endblock %}
