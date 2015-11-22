@@ -10,10 +10,6 @@ from . import logic
 from . import tools
 
 
-def index(request):
-    return render(request, 'index.html', {})
-
-
 class InvalidSearchConditions(Exception):
     pass
 

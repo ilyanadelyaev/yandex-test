@@ -2,8 +2,7 @@
 
 {% block content %}
     <h2>Search</h2>
-
-    {% if error_message %}<p class="bg-warning">{{ error_message }}</p>{% endif %}
+    {% if error_message %}<p class="bg-danger" style="padding: 20px;">{{ error_message }}</p>{% endif %}
 
     <form action="{% url 'lib:search_results' %}" method="get">
     {% csrf_token %}
