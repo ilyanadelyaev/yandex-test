@@ -35,21 +35,26 @@ class DirectionStation(models.Model):
 class Route(models.Model):
     name = models.CharField(max_length=60)
     direction = models.ForeignKey(Direction)
-    start_station = models.PositiveSmallIntegerField()
-    end_station = models.PositiveSmallIntegerField()
-    weekday = models.PositiveSmallIntegerField()
 
     def __unicode__(self):
         return '{} [{}]'.format(self.name, self.id)
+
+    def routestation_list(self):
+        return self.routestation_set.all()
+
+    def timetable_list(self):
+        return self.timetable_set.all()
 
 
 class RouteStation(models.Model):
     route = models.ForeignKey(Route)
     station = models.ForeignKey(Station)
-    station_pos = models.PositiveSmallIntegerField(null=True)
+    position = models.PositiveSmallIntegerField()
+    wait_time = models.DurationField()
+    move_time = models.DurationField()
 
     def __unicode__(self):
-        return '{} - {} ({}) [{}]'.format(self.station, self.station_pos, self.route, self.id)
+        return '{} - {} - {} [{}]'.format(self.station, self.route, self.position, self.id)
 
 
 class Timetable(models.Model):
