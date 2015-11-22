@@ -1,9 +1,8 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <h2>{{ station.name }}</h2>
+    <h2>Station "{{ station.name }}"</h2>
     <div><a href="{% url 'lib:stations_index' %}">Go to list</a></div>
-    <h3>Station</h3>
     {% if directionstation_list %}
         <h4>Directions</h4>
         <table class="table table-striped">
@@ -20,6 +19,25 @@
                 </td>
             </tr>
         {% endfor %}
+        </table>
+    {% endif %}
+    {% if routestation_list %}
+        <h4>Routes</h4>
+        <table class="table table-striped">
+            <tr>
+                <th>#</th>
+                <th>Name</th>
+            </tr>
+            {% for rs in routestation_list %}
+                <tr>
+                    <td>
+                        {{ rs.route.id }}
+                    </td>
+                    <td>
+                        <a href="{% url 'lib:routes_detail' rs.route.id %}">{{ rs.route.name }}</a>
+                    </td>
+                </tr>
+            {% endfor %}
         </table>
     {% endif %}
     <div>Station ID: {{ station.id }}</div>

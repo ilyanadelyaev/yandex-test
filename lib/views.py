@@ -67,6 +67,7 @@ class StationDetailView(generic.DetailView):
     def get_context_data(self, **kwargs):
         context = super(StationDetailView, self).get_context_data(**kwargs)
         context['directionstation_list'] = self.object.directionstation_list()
+        context['routestation_list'] = self.object.routestation_list()
         return context
 
 

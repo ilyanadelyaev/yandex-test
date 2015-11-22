@@ -3,9 +3,8 @@
 {% load app_filters %}
 
 {% block content %}
-    <h2>{{ route.name }}</h2>
+    <h2>Route "{{ route.name }}"</h2>
     <div><a href="{% url 'lib:routes_index' %}">Go to list</a></div>
-    <h3>Route</h3>
     <div>
         Direction:
         <a href="{% url 'lib:directions_detail' route.direction.id %}">{{ route.direction.name }}</a>

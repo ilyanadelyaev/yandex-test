@@ -12,6 +12,9 @@ class Station(models.Model):
     def directionstation_list(self):
         return self.directionstation_set.all()
 
+    def routestation_list(self):
+        return self.routestation_set.all()
+
 
 class Direction(models.Model):
     name = models.CharField(max_length=60)
