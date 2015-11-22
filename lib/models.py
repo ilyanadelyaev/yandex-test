@@ -1,5 +1,7 @@
 from django.db import models
 
+from .tools import Weekday
+
 
 class Station(models.Model):
     name = models.CharField(max_length=30)
@@ -39,3 +41,21 @@ class Route(models.Model):
 
     def __unicode__(self):
         return '{} [{}]'.format(self.name, self.id)
+
+
+class RouteStation(models.Model):
+    route = models.ForeignKey(Route)
+    station = models.ForeignKey(Station)
+    station_pos = models.PositiveSmallIntegerField(null=True)
+
+    def __unicode__(self):
+        return '{} - {} ({}) [{}]'.format(self.station, self.station_pos, self.route, self.id)
+
+
+class Timetable(models.Model):
+    route = models.ForeignKey(Route)
+    weekday = models.PositiveSmallIntegerField(choices=Weekday.choices)
+    time = models.TimeField()
+
+    def __unicode__(self):
+        return '{} - {} : {} [{}]'.format(self.route, self.weekday, self.time, self.id)
