@@ -2,9 +2,20 @@
 
 {% block content %}
     <h2>Routes</h2>
-    <ul>
-    {% for r in routes %}
-        <li><a href="{% url 'lib:routes_detail' r.id %}">{{ r.name }}</a></li>
-    {% endfor %}
-    </ul>
+    <table class="table table-striped">
+        <tr>
+            <th>#</th>
+            <th>Name</th>
+        </tr>
+        {% for r in routes %}
+            <tr>
+                <td>
+                    {{ r.id }}
+                </td>
+                <td>
+                    <a href="{% url 'lib:routes_detail' r.id %}">{{ r.name }}</a>
+                </td>
+            </tr>
+        {% endfor %}
+    </table>
 {% endblock %}

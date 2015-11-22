@@ -10,14 +10,6 @@
         Direction:
         <a href="{% url 'lib:directions_detail' route.direction.id %}">{{ route.direction.name }}</a>
     </div>
-    {% if timetable_list %}
-        <h4>Timetable</h4>
-        <ul>
-        {% for tt in timetable_list %}
-            <li>{{ tt.weekday | weekday }} - {{ tt.time }}</li>
-        {% endfor %}
-        </ul>
-    {% endif %}
     {% if routestation_list %}
         <h4>Stations</h4>
         <table class="table table-striped">
@@ -41,6 +33,21 @@
                     <td>
                     {{ rs.move_time }}
                     </td>
+                </tr>
+            {% endfor %}
+        </table>
+    {% endif %}
+    {% if timetable_list %}
+        <h4>Timetable</h4>
+        <table class="table table-striped">
+            <tr>
+                <th>Weekday</th>
+                <th>Time</th>
+            </tr>
+            {% for tt in timetable_list %}
+                <tr>
+                    <td>{{ tt.weekday | weekday }}</td>
+                    <td>{{ tt.time }}</td>
                 </tr>
             {% endfor %}
         </table>

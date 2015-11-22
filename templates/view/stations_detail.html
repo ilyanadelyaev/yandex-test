@@ -6,12 +6,21 @@
     <h3>Station</h3>
     {% if directionstation_list %}
         <h4>Directions</h4>
-        <ul>
+        <table class="table table-striped">
+            <tr>
+                <th>#</th>
+                <th>Name</th>
+            </tr>
         {% for ds in directionstation_list %}
-            <li><a href="{% url 'lib:directions_detail' ds.direction.id %}"
-                >{{ ds.direction.name }}</a></li>
+            <tr>
+                <td>{{ ds.direction.id }}</td>
+                <td>
+                <a href="{% url 'lib:directions_detail' ds.direction.id %}"
+                    >{{ ds.direction.name }}</a>
+                </td>
+            </tr>
         {% endfor %}
-        </ul>
+        </table>
     {% endif %}
-    <div>{{ station.id }}</div>
+    <div>Station ID: {{ station.id }}</div>
 {% endblock %}
