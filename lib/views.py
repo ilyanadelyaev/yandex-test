@@ -51,6 +51,8 @@ def search_results(request):
         route = logic.search_routes(start_station.id, end_station.id, weekday)
         #
         return render(request, 'view/search_results.html', {
+            'start_station': start_station,
+            'end_station': end_station,
             'weekday': weekday,
             'route': route,
         })

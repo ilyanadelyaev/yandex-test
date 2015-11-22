@@ -5,24 +5,36 @@
 {% block content %}
     <h2>Search results</h2>
     {% if route %}
-        <h3>Routes on "{{ weekday | weekday }}"</h3>
+        <h3>{{ start_station }} - {{ end_station }} / Routes on "{{ weekday | weekday }}"</h3>
         <table class="table table-striped">
             <tr>
+                <th>#</th>
                 <th>Start station</th>
                 <th>End station</th>
-                <th>Direction</th>
                 <th>Routes</th>
+                <th>Direction</th>
             </tr>
             {% for s, e, d, rr in route %}
                 <tr>
-                    <td>{{ s }}</td>
-                    <td>{{ e }}</td>
-                    <td>{{ d }}</td>
+                    <td>{{ forloop.counter }}</td>
+                    <td>
+                        <a href="{% url 'lib:stations_detail' s.id %}">{{ s.name }}</a>
+                    </td>
+                    <td>
+                        <a href="{% url 'lib:stations_detail' e.id %}">{{ e.name }}</a>
+                    </td>
                     <td><ul>
                         {% for r, t in rr %}
-                            <li>{{ r }} / {{ t }}</li>
+                            <li>
+                                <a href="{% url 'lib:routes_detail' r.id %}">{{ r.name }}</a>
+                                /
+                                {{ t }}
+                            </li>
                         {% endfor %}
                     </ul></td>
+                    <td>
+                        <a href="{% url 'lib:directions_detail' d.id %}">{{ d.name }}</a>
+                    </td>
                 </tr>
             {% endfor %}
         </table>
