@@ -109,6 +109,9 @@ def search_routes(start, end, weekday):
 
     _process(start, nodes[:])
 
+    if not paths:
+        raise SearchExcepton('Unbounded stations')
+
     # TODO: give path size by time
     path = min(paths, key=len)
 
