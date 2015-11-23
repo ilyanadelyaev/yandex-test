@@ -130,3 +130,7 @@ def search_routes(start, end, weekday):
         return ret
 
     return __routes_with_models(routes)
+
+
+def check_consistency():
+    pass
