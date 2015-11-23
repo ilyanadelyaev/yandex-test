@@ -38,8 +38,9 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'core',
-    'view',
     'api',
+    'www',
+    'view',  # debug
 )
 
 MIDDLEWARE_CLASSES = (
