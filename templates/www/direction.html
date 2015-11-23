@@ -1,20 +1,45 @@
 {% extends "www/base.html" %}
 
 {% block content %}
-    <h2>Direction "<span id="name"></span>"</h2>
+    <h2>Directon "<span id="name"></span>"</h2>
+
+    <h3>Stations</h3>
+    <table id="stations" class="table table-striped">
+        <tr>
+            <th>#</th>
+            <th>Name</th>
+            <th>Position</th>
+        </tr>
+    </table>
+
+    <h3>Routes</h3>
+    <table id="routes" class="table table-striped">
+        <tr>
+            <th>#</th>
+            <th>Name</th>
+        </tr>
+    </table>
+
+    <div>Object ID: <span id="obj_id"></span></div>
 {% endblock %}
 
 {% block scripts %}
     <script type="text/javascript">
         $(function() {
-            $.getJSON('/api/direction/{{pk}}/', function(data) {
-                if ( data.length ) {
-                    obj = data[0];
-                    $('#name').text( obj.fields.name );
-                } else {
-                    $('#errors').text('Invalid ID');
-                    $('#errors').show();
-                }
+            $.getJSON('/api/direction/{{pk}}/', function( o ) {
+                $('#name').text( o.name );
+                $('#obj_id').text( o.id );
+                $.each( o.directionstation, function( i, ds ) {
+                    $('#stations').append('<tr><td>' + ds.station.id
+                        + '</td><td><a href="/station/' + ds.station.id + '">'
+                        + ds.station.name + '</a></td><td>'
+                        + ds.position + '</td></tr>');
+                });
+                $.each( o.route, function( i, r ) {
+                    $('#routes').append('<tr><td>' + r.id
+                        + '</td><td><a href="/route/' + r.id + '">'
+                        + r.name + '</a></td></tr>');
+                });
             });
         });
     </script>

@@ -2,19 +2,42 @@
 
 {% block content %}
     <h2>Station "<span id="name"></span>"</h2>
+
+    <h3>Directions</h3>
+    <table id="directions" class="table table-striped">
+        <tr>
+            <th>#</th>
+            <th>Name</th>
+        </tr>
+    </table>
+
+    <h3>Routes</h3>
+    <table id="routes" class="table table-striped">
+        <tr>
+            <th>#</th>
+            <th>Name</th>
+        </tr>
+    </table>
+
+    <div>Object ID: <span id="obj_id"></span></div>
 {% endblock %}
 
 {% block scripts %}
     <script type="text/javascript">
         $(function() {
-            $.getJSON('/api/station/{{pk}}/', function(data) {
-                if ( data.length ) {
-                    obj = data[0];
-                    $('#name').text( obj.fields.name );
-                } else {
-                    $('#errors').text('Invalid ID');
-                    $('#errors').show();
-                }
+            $.getJSON('/api/station/{{pk}}/', function( o ) {
+                $('#name').text( o.name );
+                $('#obj_id').text( o.id );
+                $.each( o.directionstation, function( i, ds ) {
+                    $('#directions').append('<tr><td>' + ds.direction.id
+                        + '</td><td><a href="/direction/' + ds.direction.id + '">'
+                        + ds.direction.name + '</a></td></tr>');
+                });
+                $.each( o.routesstation, function( i, rs ) {
+                    $('#routes').append('<tr><td>' + rs.route.id
+                        + '</td><td><a href="/route/' + rs.route.id + '">'
+                        + rs.route.name + '</a></td></tr>');
+                });
             });
         });
     </script>

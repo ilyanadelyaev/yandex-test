@@ -1,4 +1,28 @@
 {% extends "www/base.html" %}
 
 {% block content %}
+    <h2>Stations</h2>
+
+    <table id="table" class="table table-striped">
+        <tr>
+            <th>#</th>
+            <th>Name</th>
+            <th>Directions count</th>
+            <th>Routes count</th>
+        </tr>
+    </table>
+{% endblock %}
+
+{% block scripts %}
+    <script type="text/javascript">
+        $(function() {
+            $.getJSON('/api/station/', function(data) {
+                $.each( data, function( i, o ) {
+                    $('#table').append('<tr><td>' + o.id + '</td><td><a href="/station/' + o.id + '">'
+                        + o.name + '</a></td><td>' + o.directions_count + '</td><td>'
+                        + o.routes_count + '</td></tr>');
+                });
+            });
+        });
+    </script>
 {% endblock %}
