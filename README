@@ -1,0 +1,11 @@
+INIT
+./sh/init.sh
+
+ADD DATA
+./sh/add_data.sh
+
+RUN SERVER
+./sh/run.sh
+
+CLEANUP
+./sh/cleanup.sh
