@@ -18,6 +18,7 @@ stations = [
     'Berlin',
     'Dresden',
     'Paris',
+    'International Space Station'
 ]
 
 for station in stations:
