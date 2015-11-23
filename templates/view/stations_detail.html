@@ -2,7 +2,7 @@
 
 {% block content %}
     <h2>Station "{{ station.name }}"</h2>
-    <div><a href="{% url 'lib:stations_index' %}">Go to list</a></div>
+    <div><a href="{% url 'view:stations_index' %}">Go to list</a></div>
     {% if directionstation_list %}
         <h4>Directions</h4>
         <table class="table table-striped">
@@ -14,7 +14,7 @@
             <tr>
                 <td>{{ ds.direction.id }}</td>
                 <td>
-                <a href="{% url 'lib:directions_detail' ds.direction.id %}"
+                <a href="{% url 'view:directions_detail' ds.direction.id %}"
                     >{{ ds.direction.name }}</a>
                 </td>
             </tr>
@@ -34,7 +34,7 @@
                         {{ rs.route.id }}
                     </td>
                     <td>
-                        <a href="{% url 'lib:routes_detail' rs.route.id %}">{{ rs.route.name }}</a>
+                        <a href="{% url 'view:routes_detail' rs.route.id %}">{{ rs.route.name }}</a>
                     </td>
                 </tr>
             {% endfor %}

@@ -111,3 +111,20 @@ class RouteDetailView(generic.DetailView):
         context['routestation_list'] = self.object.routestation_list()
         context['timetable_list'] = self.object.timetable_list()
         return context
+
+
+# urls
+
+from django.conf.urls import url
+
+urlpatterns = [
+    url(r'^$', SearchView.search, name='search'),
+    url(r'^search$', SearchView.search_results, name='search_results'),
+
+    url(r'^stations/$', StationIndexView.as_view(), name='stations_index'),
+    url(r'^stations/(?P<pk>[0-9]+)/$', StationDetailView.as_view(), name='stations_detail'),
+    url(r'^directions/$', DirectionIndexView.as_view(), name='directions_index'),
+    url(r'^directions/(?P<pk>[0-9]+)/$', DirectionDetailView.as_view(), name='directions_detail'),
+    url(r'^routes/$', RouteIndexView.as_view(), name='routes_index'),
+    url(r'^routes/(?P<pk>[0-9]+)/$', RouteDetailView.as_view(), name='routes_detail'),
+]

@@ -17,13 +17,13 @@
         <nav class="navbar navbar-default navbar-fixed-top navbar-inverse">
             <div class="container-fluid">
                 <div class="navbar-header">
-                    <a class="navbar-brand" href="{% url 'lib:index' %}">Train Routes</a>
+                    <a class="navbar-brand" href="{% url 'view:search' %}">Train Routes</a>
                 </div>
                 <div id="navbar" class="collapse navbar-collapse">
                     <ul class="nav navbar-nav">
-                        <li><a href="{% url 'lib:routes_index' %}">Routes</a></li>
-                        <li><a href="{% url 'lib:stations_index' %}">Stations</a></li>
-                        <li><a href="{% url 'lib:directions_index' %}">Directions</a></li>
+                        <li><a href="{% url 'view:routes_index' %}">Routes</a></li>
+                        <li><a href="{% url 'view:stations_index' %}">Stations</a></li>
+                        <li><a href="{% url 'view:directions_index' %}">Directions</a></li>
                     </ul>
                 </div>
             </div>

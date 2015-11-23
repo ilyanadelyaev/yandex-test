@@ -4,10 +4,10 @@
 
 {% block content %}
     <h2>Route "{{ route.name }}"</h2>
-    <div><a href="{% url 'lib:routes_index' %}">Go to list</a></div>
+    <div><a href="{% url 'view:routes_index' %}">Go to list</a></div>
     <div>
         Direction:
-        <a href="{% url 'lib:directions_detail' route.direction.id %}">{{ route.direction.name }}</a>
+        <a href="{% url 'view:directions_detail' route.direction.id %}">{{ route.direction.name }}</a>
     </div>
     {% if routestation_list %}
         <h4>Stations</h4>
@@ -24,7 +24,7 @@
                     {{ rs.position }}
                     </td>
                     <td>
-                    <a href="{% url 'lib:stations_detail' rs.station.id %}">{{ rs.station.name }}</a>
+                    <a href="{% url 'view:stations_detail' rs.station.id %}">{{ rs.station.name }}</a>
                     </td>
                     <td>
                     {{ rs.wait_time }}

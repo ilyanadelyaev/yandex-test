@@ -13,7 +13,7 @@
                     {{ d.id }}
                 </td>
                 <td>
-                    <a href="{% url 'lib:directions_detail' d.id %}">{{ d.name }}</a>
+                    <a href="{% url 'view:directions_detail' d.id %}">{{ d.name }}</a>
                 </td>
             </tr>
         {% endfor %}

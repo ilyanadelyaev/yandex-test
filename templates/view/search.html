@@ -4,7 +4,7 @@
     <h2>Search</h2>
     {% if error_message %}<p class="bg-danger" style="padding: 20px;">{{ error_message }}</p>{% endif %}
 
-    <form action="{% url 'lib:search_results' %}" method="get">
+    <form action="{% url 'view:search_results' %}" method="get">
     {% csrf_token %}
     {{ form.as_p }}
     <p><input class="btn btn-success btn-lg" type="submit" value="search" /></p>

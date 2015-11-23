@@ -13,7 +13,7 @@
                     {{ r.id }}
                 </td>
                 <td>
-                    <a href="{% url 'lib:routes_detail' r.id %}">{{ r.name }}</a>
+                    <a href="{% url 'view:routes_detail' r.id %}">{{ r.name }}</a>
                 </td>
             </tr>
         {% endfor %}

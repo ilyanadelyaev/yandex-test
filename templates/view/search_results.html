@@ -18,22 +18,22 @@
                 <tr>
                     <td>{{ forloop.counter }}</td>
                     <td>
-                        <a href="{% url 'lib:stations_detail' s.id %}">{{ s.name }}</a>
+                        <a href="{% url 'view:stations_detail' s.id %}">{{ s.name }}</a>
                     </td>
                     <td>
-                        <a href="{% url 'lib:stations_detail' e.id %}">{{ e.name }}</a>
+                        <a href="{% url 'view:stations_detail' e.id %}">{{ e.name }}</a>
                     </td>
                     <td><ul>
                         {% for r, t in rr %}
                             <li>
-                                <a href="{% url 'lib:routes_detail' r.id %}">{{ r.name }}</a>
+                                <a href="{% url 'view:routes_detail' r.id %}">{{ r.name }}</a>
                                 /
                                 {{ t }}
                             </li>
                         {% endfor %}
                     </ul></td>
                     <td>
-                        <a href="{% url 'lib:directions_detail' d.id %}">{{ d.name }}</a>
+                        <a href="{% url 'view:directions_detail' d.id %}">{{ d.name }}</a>
                     </td>
                 </tr>
             {% endfor %}
