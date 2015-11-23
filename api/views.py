@@ -6,6 +6,7 @@ import django.http
 
 import core.models
 import core.logic
+import lib.tools
 
 
 def _station_dict(o):
@@ -65,6 +66,13 @@ class API(object):
     @staticmethod
     def _response(data):
         return django.http.HttpResponse(data, content_type='application/json')
+
+    @classmethod
+    def tools(cls, request):
+        ret = []
+        if request.GET.get('tool') == 'weekday':
+            ret = list(lib.tools.Weekday.choices)
+        return cls._response(json.dumps(ret))
 
 
 class SearchAPI(API):

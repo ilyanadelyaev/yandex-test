@@ -1,8 +1,22 @@
 import django.shortcuts
+import django.forms
+
+
+class SearchForm(django.forms.Form):
+    start_station = django.forms.ChoiceField()
+    end_station = django.forms.ChoiceField()
+    weekday = django.forms.ChoiceField()
+
+    def __init__(self, *args, **kwargs):
+        super(SearchForm, self).__init__(*args, **kwargs)
+        self.fields['start_station'].widget.attrs['class'] = 'form-control'
+        self.fields['end_station'].widget.attrs['class'] = 'form-control'
+        self.fields['weekday'].widget.attrs['class'] = 'form-control'
 
 
 def search(request):
-    return django.shortcuts.render(request, 'www/search.html')
+    form = SearchForm()
+    return django.shortcuts.render(request, 'www/search.html', {'form': form})
 
 
 def search_results(request):

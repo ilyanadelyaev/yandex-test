@@ -12,4 +12,6 @@ urlpatterns = [
     django.conf.urls.url(r'^direction/$', api.views.ViewAPI.directions_list, name='directions_list'),
     django.conf.urls.url(r'^route/(?P<pk>[0-9]+)/$', api.views.ViewAPI.route, name='route'),
     django.conf.urls.url(r'^route/$', api.views.ViewAPI.routes_list, name='routes_list'),
+
+    django.conf.urls.url(r'^tools/$', api.views.API.tools, name='tools'),
 ]

@@ -2,4 +2,30 @@
 
 {% block content %}
     <h2>Search</h2>
+
+    <form action="{% url 'www:search_results' %}" method="get">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <p><input class="btn btn-success btn-lg" type="submit" value="search" /></p>
+    </form>
+{% endblock %}
+
+{% block scripts %}
+    <script type="text/javascript">
+        $(function() {
+            $.getJSON('/api/station/', function( o ) {
+                $.each( o, function( i, s ) {
+                    var el = '<option value="' + s.id + '">' + s.name + '</option>';
+                    $('#id_start_station').append(el);
+                    $('#id_end_station').append(el);
+                });
+            });
+            $.getJSON('/api/tools/?tool=weekday', function( o ) {
+                $.each( o, function( i, w ) {
+                    var el = '<option value="' + w[0] + '">' + w[1] + '</option>';
+                    $('#id_weekday').append(el);
+                });
+            });
+        });
+    </script>
 {% endblock %}
