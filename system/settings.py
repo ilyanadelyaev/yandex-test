@@ -40,7 +40,6 @@ INSTALLED_APPS = (
     'core',
     'api',
     'www',
-    'view',  # debug
 )
 
 MIDDLEWARE_CLASSES = (
