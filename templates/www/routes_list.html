@@ -9,6 +9,7 @@
             <th>Name</th>
             <th>Direction name</th>
             <th>Station count</th>
+            <th>Timetable count</th>
         </tr>
     </table>
 {% endblock %}
@@ -20,7 +21,7 @@
                 $.each( data, function( i, o ) {
                     $('#table').append('<tr><td>' + o.id + '</td><td><a href="/route/' + o.id + '">'
                         + o.name + '</a></td><td>' + o.direction.name + '</td><td>'
-                        + o.station_count + '</td></tr>');
+                        + o.station_count + '</td><td>' + o.timetable_count + '</td></tr>');
                 });
             });
         });

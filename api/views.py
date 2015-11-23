@@ -1,7 +1,8 @@
 import json
 
+import django.db.models
+
 import django.http
-import django.core.serializers
 
 import core.models
 import core.logic
@@ -35,7 +36,12 @@ def _route_dict(o):
         'id': o.id,
         'name': o.name,
         'direction': {'id': o.direction.id, 'name': o.direction.name},
-        'station_count': o.routestation_set.count()
+        'travel_time': str(
+            o.routestation_set.aggregate(django.db.models.Sum('move_time'))['move_time__sum'] + \
+            o.routestation_set.aggregate(django.db.models.Sum('wait_time'))['wait_time__sum']
+        ),
+        'station_count': o.routestation_set.count(),
+        'timetable_count': o.timetable_set.count(),
     }
 
 def _routestation_dict(o):

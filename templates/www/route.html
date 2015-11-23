@@ -3,6 +3,7 @@
 {% block content %}
     <h2>Route "<span id="name"></span>"</h2>
     <div>Direction: "<span id="direction"></span>"</div>
+    <div>Travel time: <span id="travel_time"></span></div>
 
     <h3>Stations</h3>
     <table id="stations" class="table table-striped">
@@ -33,6 +34,7 @@
             $.getJSON('/api/route/{{pk}}/', function( o ) {
                 $('#name').text( o.name );
                 $('#direction').text( o.direction.name );
+                $('#travel_time').text( o.travel_time );
                 $('#obj_id').text( o.id );
                 $.each( o.routesstation, function( i, rs ) {
                     $('#stations').append('<tr><td>' + rs.station.id
