@@ -1,6 +1,6 @@
-from django.db import connection
+import django.db
 
-from . import models
+import core.models
 
 
 def __nodes():
@@ -10,7 +10,7 @@ def __nodes():
     only near nodes
     st_1 and st_2: (pos1 = pos2 - 1) or (pos1 = pos2 + 1)
     """
-    cursor = connection.cursor()
+    cursor = django.db.connection.cursor()
     cursor.execute("""
         select ds1.station_id, ds1.direction_id, ds2.station_id
         from
@@ -22,8 +22,8 @@ def __nodes():
             and
             abs(ds1.position - ds2.position) = 1
     """ % (
-        models.DirectionStation._meta.db_table,
-        models.DirectionStation._meta.db_table,
+        core.models.DirectionStation._meta.db_table,
+        core.models.DirectionStation._meta.db_table,
     ))
     return cursor.fetchall()
 
@@ -34,7 +34,7 @@ def __find_routes(start, end, weekday):
     --
     start station must be lt than end station
     """
-    cursor = connection.cursor()
+    cursor = django.db.connection.cursor()
     cursor.execute("""
         select rs.route_id, tt.time
         from %s tt left join
@@ -61,9 +61,9 @@ def __find_routes(start, end, weekday):
         order by
             tt.time
     """ % (
-        models.Timetable._meta.db_table,
-        models.RouteStation._meta.db_table,
-        models.RouteStation._meta.db_table,
+        core.models.Timetable._meta.db_table,
+        core.models.RouteStation._meta.db_table,
+        core.models.RouteStation._meta.db_table,
         start,
         end,
         weekday,
@@ -122,10 +122,10 @@ def search_routes(start, end, weekday):
         for i in routes:
             s, e, d, rr = i
             ret.append((
-                models.Station.objects.get(pk=s),
-                models.Station.objects.get(pk=e),
-                models.Direction.objects.get(pk=d),
-                [((models.Route.objects.get(pk=r), t)) for r, t in rr],
+                core.models.Station.objects.get(pk=s),
+                core.models.Station.objects.get(pk=e),
+                core.models.Direction.objects.get(pk=d),
+                [((core.models.Route.objects.get(pk=r), t)) for r, t in rr],
             ))
         return ret
 

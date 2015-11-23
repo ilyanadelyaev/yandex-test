@@ -1,25 +1,22 @@
-from django.shortcuts import render
-from django.views import generic
-from django import forms
+import django.forms
+import django.views.generic
+import django.shortcuts
 
-from .models import Station
-from .models import Direction
-from .models import Route
-
-from . import logic
-from . import tools
+import core.models
+import core.logic
+import lib.tools
 
 
 class SearchView(object):
     class InvalidSearchConditions(Exception):
         pass
 
-    class SearchForm(forms.Form):
-        start_station = forms.ModelChoiceField(queryset=Station.objects.all(),
+    class SearchForm(django.forms.Form):
+        start_station = django.forms.ModelChoiceField(queryset=core.models.Station.objects.all(),
             empty_label=None)
-        end_station = forms.ModelChoiceField(queryset=Station.objects.all(),
+        end_station = django.forms.ModelChoiceField(queryset=core.models.Station.objects.all(),
             empty_label=None)
-        weekday = forms.ChoiceField(choices=tools.Weekday.choices)
+        weekday = django.forms.ChoiceField(choices=lib.tools.Weekday.choices)
 
         def __init__(self, *args, **kwargs):
             super(SearchView.SearchForm, self).__init__(*args, **kwargs)
@@ -30,7 +27,7 @@ class SearchView(object):
     @classmethod
     def search(cls, request):
         form = cls.SearchForm()
-        return render(request, 'view/search.html', {
+        return django.shortcuts.render(request, 'view/search.html', {
             'form': form,
         })
 
@@ -42,19 +39,19 @@ class SearchView(object):
             if start_station == end_station:
                 raise cls.InvalidSearchConditions('start_station = end_station')
             weekday = request.GET['weekday']
-        except (KeyError, cls.InvalidSearchConditions, Station.DoesNotExist) as ex:
+        except (KeyError, cls.InvalidSearchConditions, core.models.Station.DoesNotExist) as ex:
             form = cls.SearchForm()
-            return render(request, 'view/search.html', {
+            return django.shortcuts.render(request, 'view/search.html', {
                 'error_message': str(ex),
                 'form': form,
             })
         else:
-            start_station = Station.objects.get(pk=start_station)
-            end_station = Station.objects.get(pk=end_station)
+            start_station = core.models.Station.objects.get(pk=start_station)
+            end_station = core.models.Station.objects.get(pk=end_station)
             #
-            route = logic.search_routes(start_station.id, end_station.id, weekday)
+            route = core.logic.search_routes(start_station.id, end_station.id, weekday)
             #
-            return render(request, 'view/search_results.html', {
+            return django.shortcuts.render(request, 'view/search_results.html', {
                 'start_station': start_station,
                 'end_station': end_station,
                 'weekday': weekday,
@@ -62,14 +59,14 @@ class SearchView(object):
             })
 
 
-class StationIndexView(generic.ListView):
-    model = Station
+class StationIndexView(django.views.generic.ListView):
+    model = core.models.Station
     context_object_name = 'stations'
     template_name = 'view/stations_index.html'
 
 
-class StationDetailView(generic.DetailView):
-    model = Station
+class StationDetailView(django.views.generic.DetailView):
+    model = core.models.Station
     template_name = 'view/stations_detail.html'
 
     def get_context_data(self, **kwargs):
@@ -79,14 +76,14 @@ class StationDetailView(generic.DetailView):
         return context
 
 
-class DirectionIndexView(generic.ListView):
-    model = Direction
+class DirectionIndexView(django.views.generic.ListView):
+    model = core.models.Direction
     context_object_name = 'directions'
     template_name = 'view/directions_index.html'
 
 
-class DirectionDetailView(generic.DetailView):
-    model = Direction
+class DirectionDetailView(django.views.generic.DetailView):
+    model = core.models.Direction
     template_name = 'view/directions_detail.html'
 
     def get_context_data(self, **kwargs):
@@ -96,14 +93,14 @@ class DirectionDetailView(generic.DetailView):
         return context
 
 
-class RouteIndexView(generic.ListView):
-    model = Route
+class RouteIndexView(django.views.generic.ListView):
+    model = core.models.Route
     context_object_name = 'routes'
     template_name = 'view/routes_index.html'
 
 
-class RouteDetailView(generic.DetailView):
-    model = Route
+class RouteDetailView(django.views.generic.DetailView):
+    model = core.models.Route
     template_name = 'view/routes_detail.html'
 
     def get_context_data(self, **kwargs):
@@ -111,20 +108,3 @@ class RouteDetailView(generic.DetailView):
         context['routestation_list'] = self.object.routestation_list()
         context['timetable_list'] = self.object.timetable_list()
         return context
-
-
-# urls
-
-from django.conf.urls import url
-
-urlpatterns = [
-    url(r'^$', SearchView.search, name='search'),
-    url(r'^search$', SearchView.search_results, name='search_results'),
-
-    url(r'^stations/$', StationIndexView.as_view(), name='stations_index'),
-    url(r'^stations/(?P<pk>[0-9]+)/$', StationDetailView.as_view(), name='stations_detail'),
-    url(r'^directions/$', DirectionIndexView.as_view(), name='directions_index'),
-    url(r'^directions/(?P<pk>[0-9]+)/$', DirectionDetailView.as_view(), name='directions_detail'),
-    url(r'^routes/$', RouteIndexView.as_view(), name='routes_index'),
-    url(r'^routes/(?P<pk>[0-9]+)/$', RouteDetailView.as_view(), name='routes_detail'),
-]
