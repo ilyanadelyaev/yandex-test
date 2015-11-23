@@ -1,4 +1,21 @@
 {% extends "www/base.html" %}
 
 {% block content %}
+    <h2>Direction "<span id="name"></span>"</h2>
+{% endblock %}
+
+{% block scripts %}
+    <script type="text/javascript">
+        $(function() {
+            $.getJSON('/api/direction/{{pk}}/', function(data) {
+                if ( data.length ) {
+                    obj = data[0];
+                    $('#name').text( obj.fields.name );
+                } else {
+                    $('#errors').text('Invalid ID');
+                    $('#errors').show();
+                }
+            });
+        });
+    </script>
 {% endblock %}
