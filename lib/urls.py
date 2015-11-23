@@ -4,8 +4,8 @@ import lib.views
 
 
 urlpatterns = [
-    url(r'^$', lib.views.search, name='index'),
-    url(r'^search$', lib.views.search_results, name='search_results'),
+    url(r'^$', lib.views.SearchView.search, name='index'),
+    url(r'^search$', lib.views.SearchView.search_results, name='search_results'),
 
     url(r'^stations/$', lib.views.StationIndexView.as_view(), name='stations_index'),
     url(r'^stations/(?P<pk>[0-9]+)/$', lib.views.StationDetailView.as_view(), name='stations_detail'),
