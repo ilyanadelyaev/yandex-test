@@ -3,6 +3,10 @@ import django.db
 import core.models
 
 
+class SearchExcepton(Exception):
+    pass
+
+
 def __nodes():
     """
     fetch all route combinations from graph
@@ -72,6 +76,16 @@ def __find_routes(start, end, weekday):
 
 
 def search_routes(start, end, weekday):
+    try:
+        start = int(start)
+        end = int(end)
+        weekday = int(weekday)
+    except ValueError:
+        raise SearchExcepton('Ivalid arguments list: {}'.format(str((start, end, weekday))))
+
+    if start == end:
+        raise SearchExcepton('start == end: {} == {}'.format(start, end))
+
     nodes = __nodes()
 
     paths = []

@@ -5,7 +5,6 @@ import www.views
 
 urlpatterns = [
     django.conf.urls.url(r'^$', www.views.search, name='search'),
-    django.conf.urls.url(r'^search$', www.views.search_results, name='search_results'),
     django.conf.urls.url(r'^station/$', www.views.stations_list, name='stations_list'),
     django.conf.urls.url(r'^station/(?P<pk>[0-9]+)/$', www.views.station, name='station'),
     django.conf.urls.url(r'^direction/$', www.views.directions_list, name='directions_list'),

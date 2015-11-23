@@ -3,15 +3,66 @@
 {% block content %}
     <h2>Search</h2>
 
-    <form action="{% url 'www:search_results' %}" method="get">
+    <form id="search_form">
     {% csrf_token %}
     {{ form.as_p }}
-    <p><input class="btn btn-success btn-lg" type="submit" value="search" /></p>
+    <p><input class="btn btn-success btn-lg" value="search" onclick="search();" /></p>
     </form>
+
+    <div id="results" style="display:none;">
+        <h3>
+            "<span id="start_station"></span> - <span id="end_station"></span>"
+            routes on <span id="weekday"></span>
+        </h3>
+        <table id="table" class="table table-striped">
+            <tr>
+                <th>#</th>
+                <th>Start station</th>
+                <th>End station</th>
+                <th>Routes</th>
+                <th>Direction</th>
+            </tr>
+        </table>
+    </div>
 {% endblock %}
 
 {% block scripts %}
     <script type="text/javascript">
+        function search() {
+            $('#errors').hide();
+            $('#results').hide();
+            //
+            $.getJSON('/api/search?' + $('#search_form').serialize(), function( o ) {
+                if ('error' in o) {
+                    $('#errors').text(o.error);
+                    $('#errors').show();
+                } else {
+                    $('#results').show();
+                    $('#table').text('');
+                    $('#table').append('<tr><th>#</th><th>Start station</th><th>End station</th>'
+                        + '<th>Routes</th><th>Direction</th></tr>');
+                    $('#start_station').text(o.start_station.name);
+                    $('#end_station').text(o.end_station.name);
+                    $('#weekday').text(o.weekday);
+                    $.each( o.path, function( i, p ) {
+                        var routes_el = '<ul>';
+                        $.each( p.routes, function( i, r ) {
+                            routes_el = routes_el + '<li>' + r.route.name + ' / ' + r.time + '</li>';
+                        });
+                        routes_el = routes_el + '</ul>';
+                        var el = '<tr>'
+                            + '<td>' + i
+                            + '</td><td>' + p.start_station.name
+                            + '</td><td>' + p.end_station.name
+                            + '</td><td>' + routes_el
+                            + '</td><td>' + p.direction.name
+                            + '</td></tr>';
+                        console.log( el );
+                        $('#table').append(el);
+                    });
+                }
+            });
+        }
         $(function() {
             $.getJSON('/api/station/', function( o ) {
                 $.each( o, function( i, s ) {

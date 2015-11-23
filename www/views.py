@@ -19,10 +19,6 @@ def search(request):
     return django.shortcuts.render(request, 'www/search.html', {'form': form})
 
 
-def search_results(request):
-    return django.shortcuts.render(request, 'www/search_results.html')
-
-
 def stations_list(request):
     return django.shortcuts.render(request, 'www/stations_list.html')
 
