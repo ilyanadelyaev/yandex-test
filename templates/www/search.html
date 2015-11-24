@@ -101,7 +101,11 @@
             });
         }
         $(function() {
+
             $("#datepicker").datepicker();
+            var today = new Date();
+            today = today.getMonth()+1 + '/' + today.getDate() + '/' + today.getFullYear();
+            $('#date_input').val(today);
 
             $.getJSON('/api/station/', function( o ) {
                 $.each( o, function( i, s ) {
