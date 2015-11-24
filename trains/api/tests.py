@@ -95,7 +95,7 @@ class SearchAPITests(django.test.TestCase):
         r = trains.core.models.Route.objects.get(name='Berlin - Prague')
         tt = trains.core.models.Timetable.objects.filter(route=r).first()
         #
-        resp = self.client.get('/api/search/', {'start_station': s1.id, 'end_station': s2.id, 'weekday': 0})
+        resp = self.client.get('/api/search/', {'start_station': s1.id, 'end_station': s2.id, 'date': '11/16/2015'})
         self.assertEqual(resp.status_code, 200)
         content = json.loads(resp.content)
         #
@@ -118,7 +118,7 @@ class SearchAPITests(django.test.TestCase):
         tt1 = trains.core.models.Timetable.objects.filter(route=r1).first()
         tt2 = trains.core.models.Timetable.objects.filter(route=r2).first()
         #
-        resp = self.client.get('/api/search/', {'start_station': s1.id, 'end_station': s3.id, 'weekday': 0})
+        resp = self.client.get('/api/search/', {'start_station': s1.id, 'end_station': s3.id, 'date': '11/16/2015'})
         self.assertEqual(resp.status_code, 200)
         content = json.loads(resp.content)
         #
@@ -141,14 +141,14 @@ class SearchAPITests(django.test.TestCase):
         self.assertIn('error', content)
 
     def test__search__invalid_arguments_list(self):
-        resp = self.client.get('/api/search/', {'start_station': 'a', 'end_station': 'b', 'weekday': 0})
+        resp = self.client.get('/api/search/', {'start_station': 'a', 'end_station': 'b', 'date': '11/16/2015'})
         self.assertEqual(resp.status_code, 200)
         content = json.loads(resp.content)
         #
         self.assertIn('error', content)
 
     def test__search__equal_station_ids(self):
-        resp = self.client.get('/api/search/', {'start_station': 1, 'end_station': 1, 'weekday': 0})
+        resp = self.client.get('/api/search/', {'start_station': 1, 'end_station': 1, 'date': '11/16/2015'})
         self.assertEqual(resp.status_code, 200)
         content = json.loads(resp.content)
         #
@@ -158,7 +158,7 @@ class SearchAPITests(django.test.TestCase):
         s1 = trains.core.models.Station.objects.get(name='Paris')
         s2 = trains.core.models.Station.objects.get(name='International Space Station')
         #
-        resp = self.client.get('/api/search/', {'start_station': s1.id, 'end_station': s2.id, 'weekday': 0})
+        resp = self.client.get('/api/search/', {'start_station': s1.id, 'end_station': s2.id, 'date': '11/16/2015'})
         self.assertEqual(resp.status_code, 200)
         content = json.loads(resp.content)
         #

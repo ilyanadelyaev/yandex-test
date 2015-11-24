@@ -1,3 +1,5 @@
+import datetime
+
 import django.db
 
 import trains.core.models
@@ -143,7 +145,7 @@ def __find_routes(start, end, weekday):
     return cursor.fetchall()
 
 
-def search_routes(start, end, weekday):
+def search_routes(start, end, date):
     try:
         start = int(start)
     except (ValueError, TypeError):
@@ -155,10 +157,10 @@ def search_routes(start, end, weekday):
         raise trains.logic.errors.InvalidSearchArguments(
             'Invalid: END argument must be INT value. END = "{}"'.format(end))
     try:
-        weekday = int(weekday)
-    except (ValueError, TypeError):
+        weekday = datetime.datetime.strptime(date, '%m/%d/%Y').date().weekday()
+    except ValueError:
         raise trains.logic.errors.InvalidSearchArguments(
-            'Invalid: WEEKDAY argument must be INT value. WEEKDAY = "{}"'.format(weekday))
+            'Invalid: DATE argument must be "MM/DD/YYYY". DATE = "{}"'.format(date))
 
     if start == end:
         raise trains.logic.errors.InvalidSearchArguments(

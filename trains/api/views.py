@@ -83,11 +83,11 @@ class SearchAPI(API):
     def search(cls, request):
         start_station = request.GET.get('start_station')
         end_station = request.GET.get('end_station')
-        weekday = request.GET.get('weekday')
+        date = request.GET.get('date')
 
         error = None
         try:
-            routes = trains.logic.search.search_routes(start_station, end_station, weekday)
+            routes = trains.logic.search.search_routes(start_station, end_station, date)
         except trains.logic.errors.SearchExcepton as ex:
             error = str(ex)
 
@@ -98,7 +98,7 @@ class SearchAPI(API):
         else:
             ret['start_station'] = _station_dict(trains.core.models.Station.objects.get(pk=start_station))
             ret['end_station'] = _station_dict(trains.core.models.Station.objects.get(pk=end_station))
-            ret['weekday'] = trains.core.models.Weekday(weekday)
+            ret['date'] = date
 
             rr = ret.setdefault('path', [])
             for start, end, direction, route in routes:

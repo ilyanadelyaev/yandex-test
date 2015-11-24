@@ -3,30 +3,61 @@
 {% block content %}
     <h2>Search</h2>
 
-    <form id="search_form">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <p><input class="btn btn-success btn-lg" value="search" onclick="search();" /></p>
-    </form>
+    <div class="row">
+        <div class="col-md-2">
+            <form id="search_form">
+                {% csrf_token %}
 
-    <div id="results" style="display:none;">
-        <h3>
-            "<span id="start_station"></span> - <span id="end_station"></span>"
-            routes on <span id="weekday"></span>
-        </h3>
-        <table id="table" class="table table-striped">
-            <tr>
-                <th>#</th>
-                <th>Start station</th>
-                <th>End station</th>
-                <th>Routes</th>
-                <th>Direction</th>
-            </tr>
-        </table>
+                <div class="form-group">
+                    <label for="start_station_input">Start station:</label>
+                    <select class="form-control" id="start_station_input" name="start_station">
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="end_station_input">End station:</label>
+                    <select class="form-control" id="end_station_input" name="end_station">
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="date_input">Date:</label>
+                    <div class="input-group date" data-provide="datepicker">
+                        <input type="text" class="form-control" name="date" id="date_input">
+                        <div class="input-group-addon">
+                            <span class="glyphicon glyphicon-th"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <input class="btn btn-success" value="search" onclick="search();" />
+            </form>
+        </div>
+        <div class="col-md-10">
+            <div id="results" style="display:none;">
+                <h3>
+                    "<span id="start_station_label"></span> - <span id="end_station_label"></span>"
+                    routes on <span id="date_label"></span>
+                </h3>
+                <table id="table" class="table table-striped">
+                    <tr>
+                        <th>#</th>
+                        <th>Start station</th>
+                        <th>End station</th>
+                        <th>Routes</th>
+                        <th>Direction</th>
+                    </tr>
+                </table>
+            </div>
+        </div>
     </div>
+
+
 {% endblock %}
 
 {% block scripts %}
+    <link href="http://eternicode.github.io/bootstrap-datepicker/bootstrap-datepicker/css/datepicker3.css" rel="stylesheet">
+    <script src="http://eternicode.github.io/bootstrap-datepicker/bootstrap-datepicker/js/bootstrap-datepicker.js"></script>
+
     <script type="text/javascript">
         function search() {
             $('#errors').hide();
@@ -41,9 +72,9 @@
                     $('#table').text('');
                     $('#table').append('<tr><th>#</th><th>Start station</th><th>End station</th>'
                         + '<th>Routes</th><th>Direction</th></tr>');
-                    $('#start_station').text(o.start_station.name);
-                    $('#end_station').text(o.end_station.name);
-                    $('#weekday').text(o.weekday);
+                    $('#start_station_label').text(o.start_station.name);
+                    $('#end_station_label').text(o.end_station.name);
+                    $('#date_label').text(o.date);
                     $.each( o.path, function( i, p ) {
                         var routes_el = '<ul>';
                         $.each( p.routes, function( i, r ) {
@@ -57,24 +88,19 @@
                             + '</td><td>' + routes_el
                             + '</td><td>' + p.direction.name
                             + '</td></tr>';
-                        console.log( el );
                         $('#table').append(el);
                     });
                 }
             });
         }
         $(function() {
+            $("#datepicker").datepicker();
+
             $.getJSON('/api/station/', function( o ) {
                 $.each( o, function( i, s ) {
                     var el = '<option value="' + s.id + '">' + s.name + '</option>';
-                    $('#id_start_station').append(el);
-                    $('#id_end_station').append(el);
-                });
-            });
-            $.getJSON('/api/weekday/', function( o ) {
-                $.each( o, function( i, w ) {
-                    var el = '<option value="' + w[0] + '">' + w[1] + '</option>';
-                    $('#id_weekday').append(el);
+                    $('#start_station_input').append(el);
+                    $('#end_station_input').append(el);
                 });
             });
         });
