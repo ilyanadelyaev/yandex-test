@@ -75,15 +75,23 @@ def __find_routes(start, end, weekday):
 def search_routes(start, end, weekday):
     try:
         start = int(start)
+    except (ValueError, TypeError):
+        raise trains.logic.errors.InvalidSearchArguments(
+            'Invalid: START argument must be INT value. START = "{}"'.format(start))
+    try:
         end = int(end)
+    except (ValueError, TypeError):
+        raise trains.logic.errors.InvalidSearchArguments(
+            'Invalid: END argument must be INT value. END = "{}"'.format(end))
+    try:
         weekday = int(weekday)
-    except ValueError:
-        raise trains.logic.errors.SearchExcepton(
-            'Ivalid arguments list: {}'.format(str((start, end, weekday))))
+    except (ValueError, TypeError):
+        raise trains.logic.errors.InvalidSearchArguments(
+            'Invalid: WEEKDAY argument must be INT value. WEEKDAY = "{}"'.format(weekday))
 
     if start == end:
-        raise trains.logic.errors.SearchExcepton(
-            'start == end: {} == {}'.format(start, end))
+        raise trains.logic.errors.InvalidSearchArguments(
+            'Invalid: START equal END : "{}" == "{}"'.format(start, end))
 
     nodes = __nodes()
 
@@ -109,8 +117,7 @@ def search_routes(start, end, weekday):
     _process(start, nodes[:])
 
     if not paths:
-        raise trains.logic.errors.SearchExcepton(
-            'Unbounded stations')
+        raise trains.logic.errors.UnboundedStations('Unbounded stations: "{}" and "{}"'.format(start, end))
 
     # TODO: give path size by time
     path = min(paths, key=len)
