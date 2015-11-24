@@ -203,32 +203,33 @@ for route, station, wait_time, move_time in routestation:
 print '-' * 40
 
 timetable = [
-    ('Moscow - Saint-Petersburg', 0, '08:00'),
-    ('Saint-Petersburg - Moscow', 0, '08:00'),
-    ('Moscow - Saint-Petersburg - EXPRESS', 0, '08:00'),
-    ('Saint-Petersburg - Moscow - EXPRESS', 0, '08:00'),
-    ('Moscow - Novosibirsk', 0, '08:00'),
-    ('Novosibirsk - Moscow', 0, '08:00'),
-    ('Moscow - Minsk', 0, '08:00'),
-    ('Minsk - Moscow', 0, '08:00'),
-    ('Saint-Petersburg - Helsinki', 0, '08:00'),
-    ('Helsinki - Saint-Petersburg', 0, '08:00'),
-    ('Minsk - Prague', 0, '08:00'),
-    ('Prague - Minsk', 0, '08:00'),
-    ('Prague - Helsinki', 0, '08:00'),
-    ('Helsinki - Prague', 0, '08:00'),
-    ('Prague - Berlin', 0, '08:00'),
-    ('Berlin - Prague', 0, '08:00'),
-    ('Prague - Berlin - EXPRESS', 0, '08:00'),
-    ('Berlin - Prague - EXPRESS', 0, '08:00'),
-    ('Berlin - Paris', 0, '08:00'),
-    ('Paris - Berlin', 0, '08:00'),
+    ('Moscow - Saint-Petersburg', '08:00'),
+    ('Saint-Petersburg - Moscow', '08:00'),
+    ('Moscow - Saint-Petersburg - EXPRESS', '08:00'),
+    ('Saint-Petersburg - Moscow - EXPRESS', '08:00'),
+    ('Moscow - Novosibirsk', '08:00'),
+    ('Novosibirsk - Moscow', '08:00'),
+    ('Moscow - Minsk', '08:00'),
+    ('Minsk - Moscow', '08:00'),
+    ('Saint-Petersburg - Helsinki', '08:00'),
+    ('Helsinki - Saint-Petersburg', '08:00'),
+    ('Minsk - Prague', '08:00'),
+    ('Prague - Minsk', '08:00'),
+    ('Prague - Helsinki', '08:00'),
+    ('Helsinki - Prague', '08:00'),
+    ('Prague - Berlin', '08:00'),
+    ('Berlin - Prague', '08:00'),
+    ('Prague - Berlin - EXPRESS', '08:00'),
+    ('Berlin - Prague - EXPRESS', '08:00'),
+    ('Berlin - Paris', '08:00'),
+    ('Paris - Berlin', '08:00'),
 ]
 
-for route, weekday, time in timetable:
-    print 'Timetable for route "{}", weekday: "{}", time: "{}"'.format(route, weekday, time)
+for route, time in timetable:
+    print 'Timetable for route "{}", time: "{}"'.format(route, time)
     time = datetime.datetime.strptime(time, '%H:%M')
-    trains.core.models.Route.objects.filter(name=route).first().timetable_set.create(
-        weekday=weekday,
-        time=time,
-    )
+    for weekday in xrange(7):
+        trains.core.models.Route.objects.filter(name=route).first().timetable_set.create(
+            weekday=weekday,
+            time=time,
+        )
