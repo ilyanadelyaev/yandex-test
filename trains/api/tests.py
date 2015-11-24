@@ -5,6 +5,7 @@ import datetime
 import django.test
 
 import trains.core.models
+import trains.core.tools
 
 
 class SearchAPITests(django.test.TestCase):
@@ -256,6 +257,9 @@ class ViewAPITests(django.test.TestCase):
         rn = str(uuid.uuid4())
         r = trains.core.models.Route(name=rn, direction=d, start_station=s, end_station=s)
         r.save()
+        tt = r.timetable_set.create(weekday=0, time=datetime.time(0, 0))
+        tt.save()
+        tt = trains.core.models.Timetable.objects.filter(route=r).first()
         #
         resp = self.client.get('/api/route/{}/'.format(r.id))
         self.assertEqual(resp.status_code, 200)
@@ -267,6 +271,9 @@ class ViewAPITests(django.test.TestCase):
         self.assertEqual(content['travel_time'], '-')
         self.assertIn('station_count', content)
         self.assertIn('timetable_count', content)
+        self.assertEqual(
+            content['timetable'][0]['weekday'],
+            trains.core.tools.Weekday(tt.weekday))
 
     def test__tools__weekdays(self):
         resp = self.client.get('/api/tools/', {'tool': 'weekdays'})

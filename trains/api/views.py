@@ -5,6 +5,7 @@ import django.db.models
 import django.http
 
 import trains.core.models
+import trains.core.tools
 import trains.logic.search
 import trains.logic.errors
 
@@ -67,7 +68,7 @@ def _routestation_dict(o):
 def _timetable_dict(o):
     return {
         'route': {'id': o.route.id, 'name': o.route.name},
-        'weekday': o.weekday,
+        'weekday': trains.core.tools.Weekday(o.weekday),
         'time': str(o.time),
     }
 
