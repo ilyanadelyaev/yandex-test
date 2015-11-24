@@ -94,7 +94,7 @@ class SearchAPI(API):
         else:
             ret['start_station'] = _station_dict(trains.core.models.Station.objects.get(pk=start_station))
             ret['end_station'] = _station_dict(trains.core.models.Station.objects.get(pk=end_station))
-            ret['weekday'] = trains.core.models.Weekday(int(weekday))
+            ret['weekday'] = trains.core.models.Weekday(weekday)
 
             rr = ret.setdefault('path', [])
             for start, end, direction, route in routes:

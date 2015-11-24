@@ -87,6 +87,10 @@ class Weekday(object):
 
     @classmethod
     def _to_str(cls, wd):
+        try:
+            wd = int(wd)
+        except ValueError:
+            return ''
         return cls.__choices.get(wd, '')
 
 
