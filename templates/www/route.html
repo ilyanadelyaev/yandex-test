@@ -10,7 +10,6 @@
         <tr>
             <th>#</th>
             <th>Name</th>
-            <th>Position</th>
             <th>Wait time</th>
             <th>Move time</th>
         </tr>
@@ -39,8 +38,8 @@
                 $.each( o.routesstation, function( i, rs ) {
                     $('#stations').append('<tr><td>' + rs.station.id
                         + '</td><td><a href="/station/' + rs.station.id + '">'
-                        + rs.station.name + '</a></td><td>' + rs.position
-                        + '</td><td>' + rs.wait_time + '</td><td>' + rs.move_time + '</td></tr>');
+                        + rs.station.name + '</a></td><td>'
+                        + rs.wait_time + '</td><td>' + rs.move_time + '</td></tr>');
                 });
                 $.each( o.timetable, function( i, t ) {
                     $('#timetable').append('<tr><td>' + i + '</td><td>'

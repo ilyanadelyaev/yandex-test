@@ -41,6 +41,8 @@ def _route_dict(o, extended=False):
         'id': o.id,
         'name': o.name,
         'direction': {'id': o.direction.id, 'name': o.direction.name},
+        'start_station': {'id': o.start_station.id, 'name': o.start_station.name},
+        'end_station': {'id': o.end_station.id, 'name': o.end_station.name},
     }
     if extended:
         traveltime = '-'
@@ -58,7 +60,6 @@ def _routestation_dict(o):
     return {
         'route': {'id': o.route.id, 'name': o.route.name},
         'station': {'id': o.station.id, 'name': o.station.name},
-        'position': o.position,
         'wait_time': str(o.wait_time) if o.wait_time else '-',
         'move_time': str(o.move_time) if o.move_time else '-',
     }

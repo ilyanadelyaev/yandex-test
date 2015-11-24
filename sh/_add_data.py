@@ -82,33 +82,36 @@ print '-' * 40
 
 
 routes = [
-    ('Moscow - Saint-Petersburg', 'Moscow - Saint-Petersburg'),
-    ('Saint-Petersburg - Moscow', 'Moscow - Saint-Petersburg'),
-    ('Moscow - Saint-Petersburg - EXPRESS', 'Moscow - Saint-Petersburg'),
-    ('Saint-Petersburg - Moscow - EXPRESS', 'Moscow - Saint-Petersburg'),
-    ('Moscow - Novosibirsk', 'Moscow - Novosibirsk'),
-    ('Novosibirsk - Moscow', 'Moscow - Novosibirsk'),
-    ('Moscow - Minsk', 'Moscow - Minsk'),
-    ('Minsk - Moscow', 'Moscow - Minsk'),
-    ('Saint-Petersburg - Helsinki', 'Saint-Petersburg - Helsinki'),
-    ('Helsinki - Saint-Petersburg', 'Saint-Petersburg - Helsinki'),
-    ('Minsk - Prague', 'Minsk - Prague'),
-    ('Prague - Minsk', 'Minsk - Prague'),
-    ('Prague - Helsinki', 'Prague - Helsinki'),
-    ('Helsinki - Prague', 'Prague - Helsinki'),
-    ('Prague - Berlin', 'Prague - Berlin'),
-    ('Berlin - Prague', 'Prague - Berlin'),
-    ('Prague - Berlin - EXPRESS', 'Prague - Berlin'),
-    ('Berlin - Prague - EXPRESS', 'Prague - Berlin'),
-    ('Berlin - Paris', 'Berlin - Paris'),
-    ('Paris - Berlin', 'Berlin - Paris'),
+    ('Moscow - Saint-Petersburg', 'Moscow - Saint-Petersburg', 'Moscow', 'Saint-Petersburg'),
+    ('Saint-Petersburg - Moscow', 'Moscow - Saint-Petersburg', 'Saint-Petersburg', 'Moscow'),
+    ('Moscow - Saint-Petersburg - EXPRESS', 'Moscow - Saint-Petersburg', 'Moscow', 'Saint-Petersburg'),
+    ('Saint-Petersburg - Moscow - EXPRESS', 'Moscow - Saint-Petersburg', 'Saint-Petersburg', 'Moscow'),
+    ('Moscow - Novosibirsk', 'Moscow - Novosibirsk', 'Moscow', 'Novosibirsk'),
+    ('Novosibirsk - Moscow', 'Moscow - Novosibirsk', 'Novosibirsk', 'Moscow'),
+    ('Moscow - Minsk', 'Moscow - Minsk', 'Moscow', 'Minsk'),
+    ('Minsk - Moscow', 'Moscow - Minsk', 'Minsk', 'Moscow'),
+    ('Saint-Petersburg - Helsinki', 'Saint-Petersburg - Helsinki', 'Saint-Petersburg', 'Helsinki'),
+    ('Helsinki - Saint-Petersburg', 'Saint-Petersburg - Helsinki', 'Helsinki', 'Saint-Petersburg'),
+    ('Minsk - Prague', 'Minsk - Prague', 'Minsk', 'Prague'),
+    ('Prague - Minsk', 'Minsk - Prague', 'Prague', 'Minsk'),
+    ('Prague - Helsinki', 'Prague - Helsinki', 'Prague', 'Helsinki'),
+    ('Helsinki - Prague', 'Prague - Helsinki', 'Helsinki', 'Prague'),
+    ('Prague - Berlin', 'Prague - Berlin', 'Prague', 'Berlin'),
+    ('Berlin - Prague', 'Prague - Berlin', 'Berlin', 'Prague'),
+    ('Prague - Berlin - EXPRESS', 'Prague - Berlin', 'Prague', 'Berlin'),
+    ('Berlin - Prague - EXPRESS', 'Prague - Berlin', 'Berlin', 'Prague'),
+    ('Berlin - Paris', 'Berlin - Paris', 'Berlin', 'Paris'),
+    ('Paris - Berlin', 'Berlin - Paris', 'Paris', 'Berlin'),
 ]
 
-for route, direction in routes:
-    print 'Add route "{}" for direction "{}"'.format(route, direction)
+for route, direction, start_station, end_station in routes:
+    print 'Add route "{}" for direction "{}" with: start_station: "{}", end_station: "{}"'.format(
+        route, direction, start_station, end_station)
     trains.core.models.Route(
         name=route,
-        direction=trains.core.models.Direction.objects.filter(name=direction).first()
+        direction=trains.core.models.Direction.objects.filter(name=direction).first(),
+        start_station=trains.core.models.Station.objects.filter(name=start_station).first(),
+        end_station=trains.core.models.Station.objects.filter(name=end_station).first(),
     ).save()
 
 
@@ -116,74 +119,74 @@ print '-' * 40
 
 
 routestation = [
-    ('Moscow - Saint-Petersburg', 'Moscow', 0, '00:00', '04:00'),
-    ('Moscow - Saint-Petersburg', 'Tver', 1, '00:10', '03:00'),
-    ('Moscow - Saint-Petersburg', 'Bologoe', 2, '00:05', '01:00'),
-    ('Moscow - Saint-Petersburg', 'Saint-Petersburg', 3, '00:00', '00:00'),
+    ('Moscow - Saint-Petersburg', 'Moscow', '00:00', '04:00'),
+    ('Moscow - Saint-Petersburg', 'Tver', '00:10', '03:00'),
+    ('Moscow - Saint-Petersburg', 'Bologoe', '00:05', '01:00'),
+    ('Moscow - Saint-Petersburg', 'Saint-Petersburg', '00:00', '00:00'),
 
-    ('Saint-Petersburg - Moscow', 'Saint-Petersburg', 0, '00:00', '01:00'),
-    ('Saint-Petersburg - Moscow', 'Bologoe', 1, '00:05', '03:00'),
-    ('Saint-Petersburg - Moscow', 'Tver', 2, '00:10', '04:00'),
-    ('Saint-Petersburg - Moscow', 'Moscow', 3, '00:00', '00:00'),
+    ('Saint-Petersburg - Moscow', 'Saint-Petersburg', '00:00', '01:00'),
+    ('Saint-Petersburg - Moscow', 'Bologoe', '00:05', '03:00'),
+    ('Saint-Petersburg - Moscow', 'Tver', '00:10', '04:00'),
+    ('Saint-Petersburg - Moscow', 'Moscow', '00:00', '00:00'),
 
-    ('Moscow - Saint-Petersburg - EXPRESS', 'Moscow', 0, '00:00', '07:00'),
-    ('Moscow - Saint-Petersburg - EXPRESS', 'Saint-Petersburg', 1, '00:00', '00:00'),
+    ('Moscow - Saint-Petersburg - EXPRESS', 'Moscow', '00:00', '07:00'),
+    ('Moscow - Saint-Petersburg - EXPRESS', 'Saint-Petersburg', '00:00', '00:00'),
 
-    ('Saint-Petersburg - Moscow - EXPRESS', 'Saint-Petersburg', 0, '00:00', '07:00'),
-    ('Saint-Petersburg - Moscow - EXPRESS', 'Moscow', 1, '00:00', '00:00'),
+    ('Saint-Petersburg - Moscow - EXPRESS', 'Saint-Petersburg', '00:00', '07:00'),
+    ('Saint-Petersburg - Moscow - EXPRESS', 'Moscow', '00:00', '00:00'),
 
-    ('Moscow - Novosibirsk', 'Moscow', 0, '00:00', '23:00'),
-    ('Moscow - Novosibirsk', 'Novosibirsk', 1, '00:00', '00:00'),
+    ('Moscow - Novosibirsk', 'Moscow', '00:00', '23:00'),
+    ('Moscow - Novosibirsk', 'Novosibirsk', '00:00', '00:00'),
 
-    ('Novosibirsk - Moscow', 'Novosibirsk', 0, '00:00', '23:00'),
-    ('Novosibirsk - Moscow', 'Moscow', 1, '00:00', '00:00'),
+    ('Novosibirsk - Moscow', 'Novosibirsk', '00:00', '23:00'),
+    ('Novosibirsk - Moscow', 'Moscow', '00:00', '00:00'),
 
-    ('Moscow - Minsk', 'Moscow', 0, '00:00', '03:00'),
-    ('Moscow - Minsk', 'Minsk', 1, '00:00', '00:00'),
+    ('Moscow - Minsk', 'Moscow', '00:00', '03:00'),
+    ('Moscow - Minsk', 'Minsk', '00:00', '00:00'),
 
-    ('Minsk - Moscow', 'Minsk', 0, '00:00', '03:00'),
-    ('Minsk - Moscow', 'Moscow', 1, '00:00', '00:00'),
+    ('Minsk - Moscow', 'Minsk', '00:00', '03:00'),
+    ('Minsk - Moscow', 'Moscow', '00:00', '00:00'),
 
-    ('Saint-Petersburg - Helsinki', 'Saint-Petersburg', 0, '00:00', '08:00'),
-    ('Saint-Petersburg - Helsinki', 'Helsinki', 1, '00:00', '00:00'),
+    ('Saint-Petersburg - Helsinki', 'Saint-Petersburg', '00:00', '08:00'),
+    ('Saint-Petersburg - Helsinki', 'Helsinki', '00:00', '00:00'),
 
-    ('Helsinki - Saint-Petersburg', 'Helsinki', 0, '00:00', '08:00'),
-    ('Helsinki - Saint-Petersburg', 'Saint-Petersburg', 1, '00:00', '00:00'),
+    ('Helsinki - Saint-Petersburg', 'Helsinki', '00:00', '08:00'),
+    ('Helsinki - Saint-Petersburg', 'Saint-Petersburg', '00:00', '00:00'),
 
-    ('Minsk - Prague', 'Minsk', 0, '00:00', '05:00'),
-    ('Minsk - Prague', 'Prague', 1, '00:00', '00:00'),
+    ('Minsk - Prague', 'Minsk', '00:00', '05:00'),
+    ('Minsk - Prague', 'Prague', '00:00', '00:00'),
 
-    ('Prague - Minsk', 'Prague', 0, '00:00', '05:00'),
-    ('Prague - Minsk', 'Minsk', 1, '00:00', '00:00'),
+    ('Prague - Minsk', 'Prague', '00:00', '05:00'),
+    ('Prague - Minsk', 'Minsk', '00:00', '00:00'),
 
-    ('Prague - Helsinki', 'Prague', 0, '00:00', '06:00'),
-    ('Prague - Helsinki', 'Helsinki', 1, '00:00', '00:00'),
+    ('Prague - Helsinki', 'Prague', '00:00', '06:00'),
+    ('Prague - Helsinki', 'Helsinki', '00:00', '00:00'),
 
-    ('Helsinki - Prague', 'Helsinki', 0, '00:00', '06:00'),
-    ('Helsinki - Prague', 'Prague', 1, '00:00', '00:00'),
+    ('Helsinki - Prague', 'Helsinki', '00:00', '06:00'),
+    ('Helsinki - Prague', 'Prague', '00:00', '00:00'),
 
-    ('Prague - Berlin', 'Prague', 0, '00:00', '01:30'),
-    ('Prague - Berlin', 'Dresden', 1, '00:05', '01:00'),
-    ('Prague - Berlin', 'Berlin', 1, '00:00', '00:00'),
+    ('Prague - Berlin', 'Prague', '00:00', '01:30'),
+    ('Prague - Berlin', 'Dresden', '00:05', '01:00'),
+    ('Prague - Berlin', 'Berlin', '00:00', '00:00'),
 
-    ('Berlin - Prague', 'Berlin', 0, '00:00', '01:00'),
-    ('Berlin - Prague', 'Dresden', 1, '00:05', '01:30'),
-    ('Berlin - Prague', 'Prague', 2, '00:00', '00:00'),
+    ('Berlin - Prague', 'Berlin', '00:00', '01:00'),
+    ('Berlin - Prague', 'Dresden', '00:05', '01:30'),
+    ('Berlin - Prague', 'Prague', '00:00', '00:00'),
 
-    ('Prague - Berlin - EXPRESS', 'Prague', 0, '00:00', '02:00'),
-    ('Prague - Berlin - EXPRESS', 'Berlin', 1, '00:00', '00:00'),
+    ('Prague - Berlin - EXPRESS', 'Prague', '00:00', '02:00'),
+    ('Prague - Berlin - EXPRESS', 'Berlin', '00:00', '00:00'),
 
-    ('Berlin - Prague - EXPRESS', 'Berlin', 0, '00:00', '02:00'),
-    ('Berlin - Prague - EXPRESS', 'Prague', 1, '00:00', '00:00'),
+    ('Berlin - Prague - EXPRESS', 'Berlin', '00:00', '02:00'),
+    ('Berlin - Prague - EXPRESS', 'Prague', '00:00', '00:00'),
 
-    ('Berlin - Paris', 'Berlin', 0, '00:00', '03:00'),
-    ('Berlin - Paris', 'Paris', 1, '00:00', '00:00'),
+    ('Berlin - Paris', 'Berlin', '00:00', '03:00'),
+    ('Berlin - Paris', 'Paris', '00:00', '00:00'),
 
-    ('Paris - Berlin', 'Paris', 0, '00:00', '03:00'),
-    ('Paris - Berlin', 'Berlin', 1, '00:00', '00:00'),
+    ('Paris - Berlin', 'Paris', '00:00', '03:00'),
+    ('Paris - Berlin', 'Berlin', '00:00', '00:00'),
 ]
 
-for route, station, position, wait_time, move_time in routestation:
+for route, station, wait_time, move_time in routestation:
     print 'Add station "{}" to route "{}" with pos: "{}", start: "{}", end: "{}"'.format(
         station, route, position, wait_time, move_time)
     wait_time = datetime.datetime.strptime(wait_time, '%H:%M')
@@ -192,7 +195,6 @@ for route, station, position, wait_time, move_time in routestation:
     move_time = datetime.timedelta(hours=move_time.hour, minutes=move_time.minute)
     trains.core.models.Route.objects.filter(name=route).first().routestation_set.create(
         station=trains.core.models.Station.objects.filter(name=station).first(),
-        position=position,
         wait_time=wait_time,
         move_time=move_time,
     )

@@ -40,36 +40,37 @@ class SearchAPITests(django.test.TestCase):
             )
         #
         routes = [
-            ('Prague - Berlin', 'Prague - Berlin'),
-            ('Berlin - Prague', 'Prague - Berlin'),
-            ('Berlin - Paris', 'Berlin - Paris'),
-            ('Paris - Berlin', 'Berlin - Paris'),
+            ('Prague - Berlin', 'Prague - Berlin', 'Prague', 'Berlin'),
+            ('Berlin - Prague', 'Prague - Berlin', 'Berlin', 'Prague'),
+            ('Berlin - Paris', 'Berlin - Paris', 'Berlin', 'Paris'),
+            ('Paris - Berlin', 'Berlin - Paris', 'Paris', 'Berlin'),
         ]
-        for route, direction in routes:
+        for route, direction, start_station, end_station, in routes:
             trains.core.models.Route(
                 name=route,
-                direction=trains.core.models.Direction.objects.filter(name=direction).first()
+                direction=trains.core.models.Direction.objects.filter(name=direction).first(),
+                start_station=trains.core.models.Station.objects.filter(name=start_station).first(),
+                end_station=trains.core.models.Station.objects.filter(name=end_station).first(),
             ).save()
         #
         routestation = [
-            ('Prague - Berlin', 'Prague', 0, '00:00', '04:00'),
-            ('Prague - Berlin', 'Berlin', 1, '00:00', '00:00'),
-            ('Berlin - Prague', 'Berlin', 0, '00:00', '04:00'),
-            ('Berlin - Prague', 'Prague', 1, '00:00', '00:00'),
+            ('Prague - Berlin', 'Prague', '00:00', '04:00'),
+            ('Prague - Berlin', 'Berlin', '00:00', '00:00'),
+            ('Berlin - Prague', 'Berlin', '00:00', '04:00'),
+            ('Berlin - Prague', 'Prague', '00:00', '00:00'),
 
-            ('Berlin - Paris', 'Berlin', 0, '00:00', '03:00'),
-            ('Berlin - Paris', 'Paris', 1, '00:00', '00:00'),
-            ('Paris - Berlin', 'Paris', 0, '00:00', '03:00'),
-            ('Paris - Berlin', 'Berlin', 1, '00:00', '00:00'),
+            ('Berlin - Paris', 'Berlin', '00:00', '03:00'),
+            ('Berlin - Paris', 'Paris', '00:00', '00:00'),
+            ('Paris - Berlin', 'Paris', '00:00', '03:00'),
+            ('Paris - Berlin', 'Berlin', '00:00', '00:00'),
         ]
-        for route, station, position, wait_time, move_time in routestation:
+        for route, station, wait_time, move_time in routestation:
             wait_time = datetime.datetime.strptime(wait_time, '%H:%M')
             wait_time = datetime.timedelta(hours=wait_time.hour, minutes=wait_time.minute)
             move_time = datetime.datetime.strptime(move_time, '%H:%M')
             move_time = datetime.timedelta(hours=move_time.hour, minutes=move_time.minute)
             trains.core.models.Route.objects.filter(name=route).first().routestation_set.create(
                 station=trains.core.models.Station.objects.filter(name=station).first(),
-                position=position,
                 wait_time=wait_time,
                 move_time=move_time,
             )
@@ -223,11 +224,14 @@ class ViewAPITests(django.test.TestCase):
         self.assertIn('routes_count', content)
 
     def test__route_list(self):
+        sn = str(uuid.uuid4())
+        s = trains.core.models.Station(name=sn)
+        s.save()
         dn = str(uuid.uuid4())
         d = trains.core.models.Direction(name=dn)
         d.save()
         rn = str(uuid.uuid4())
-        r = trains.core.models.Route(name=rn, direction=d)
+        r = trains.core.models.Route(name=rn, direction=d, start_station=s, end_station=s)
         r.save()
         #
         resp = self.client.get('/api/route/')
@@ -236,16 +240,21 @@ class ViewAPITests(django.test.TestCase):
         obj = filter(lambda x: x['name'] == rn, content)[0]
         self.assertEqual(obj['id'], d.id)
         self.assertEqual(obj['name'], r.name)
+        self.assertEqual(obj['start_station']['id'], s.id)
+        self.assertEqual(obj['end_station']['name'], sn)
         self.assertEqual(obj['travel_time'], '-')
         self.assertIn('station_count', obj)
         self.assertIn('timetable_count', obj)
 
     def test__route(self):
+        sn = str(uuid.uuid4())
+        s = trains.core.models.Station(name=sn)
+        s.save()
         dn = str(uuid.uuid4())
         d = trains.core.models.Direction(name=dn)
         d.save()
         rn = str(uuid.uuid4())
-        r = trains.core.models.Route(name=rn, direction=d)
+        r = trains.core.models.Route(name=rn, direction=d, start_station=s, end_station=s)
         r.save()
         #
         resp = self.client.get('/api/route/{}/'.format(r.id))
@@ -253,6 +262,8 @@ class ViewAPITests(django.test.TestCase):
         content = json.loads(resp.content)
         self.assertEqual(content['name'], r.name)
         self.assertEqual(content['id'], r.id)
+        self.assertEqual(content['start_station']['id'], s.id)
+        self.assertEqual(content['end_station']['name'], sn)
         self.assertEqual(content['travel_time'], '-')
         self.assertIn('station_count', content)
         self.assertIn('timetable_count', content)

@@ -37,6 +37,8 @@ class DirectionStation(django.db.models.Model):
 class Route(django.db.models.Model):
     name = django.db.models.CharField(max_length=60)
     direction = django.db.models.ForeignKey(Direction)
+    start_station = django.db.models.ForeignKey(Station, related_name='route_start_station_set')
+    end_station = django.db.models.ForeignKey(Station, related_name='route_end_station_set')
 
     def __unicode__(self):
         return '{} [{}]'.format(self.name, self.id)
@@ -51,7 +53,6 @@ class Route(django.db.models.Model):
 class RouteStation(django.db.models.Model):
     route = django.db.models.ForeignKey(Route)
     station = django.db.models.ForeignKey(Station)
-    position = django.db.models.PositiveSmallIntegerField()
     wait_time = django.db.models.DurationField()
     move_time = django.db.models.DurationField()
 

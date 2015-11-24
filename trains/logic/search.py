@@ -37,37 +37,108 @@ def __find_routes(start, end, weekday):
     """
     cursor = django.db.connection.cursor()
     cursor.execute("""
-        select rs.route_id, tt.time
-        from %s tt left join
-        (
-            select rs1.route_id route_id
-            from %s rs1 inner join %s rs2
+        select
+            rrr.route_id, tt.time
+        from
+            {timetable} tt left join
+            (
+            -- intersect two RouteStation tables to find sutable route for start/end station pair
+            -- add DirectionStation table for positions
+            select
+                r.id route_id
+            from
+                (
+                select
+                    distinct rds1.route_id route_id
+                from
+                    (
+                    select
+                        rs.route_id route_id,
+                        ds.station_id station_id,
+                        ds.position position
+                    from
+                        {directionstation} ds inner join {routestation} rs
+                    on
+                        ds.station_id = rs.station_id
+                    ) rds1
+                inner join
+                    (
+                    select
+                        rs.route_id route_id,
+                        ds.station_id station_id,
+                        ds.position position
+                    from
+                        {directionstation} ds inner join {routestation} rs
+                    on
+                        ds.station_id = rs.station_id
+                    ) rds2
+                on
+                    rds1.route_id = rds2.route_id
+                    and
+                    rds1.station_id != rds2.station_id
+                where
+                    rds1.station_id = {start}
+                    and
+                    rds2.station_id = {end}
+                ) rr
+            inner join
+                {route} r
             on
-                rs1.route_id = rs2.route_id
-                and
-                rs1.station_id != rs2.station_id
-                and
-                rs1.position < rs2.position
+                r.id = rr.route_id
             where
-                rs1.station_id = %s
-                and
-                rs2.station_id = %s
-        ) rs
+                -- fetch station positions for RouteStation from DirectionStation
+                (
+                    (
+                        (select position from {directionstation}
+                            where direction_id = r.direction_id and station_id = r.start_station_id)
+                        >
+                        (select position from {directionstation}
+                            where direction_id = r.direction_id and station_id = r.end_station_id)
+                    )
+                    and
+                    (
+                        (select position from {directionstation}
+                            where direction_id = r.direction_id and station_id = {start})
+                        >
+                        (select position from {directionstation}
+                            where direction_id = r.direction_id and station_id = {end})
+                    )
+                )
+                or
+                (
+                    (
+                        (select position from {directionstation}
+                            where direction_id = r.direction_id and station_id = r.start_station_id)
+                        <
+                        (select position from {directionstation}
+                            where direction_id = r.direction_id and station_id = r.end_station_id)
+                    )
+                    and
+                    (
+                        (select position from {directionstation}
+                            where direction_id = r.direction_id and station_id = {start})
+                        <
+                        (select position from {directionstation}
+                            where direction_id = r.direction_id and station_id = {end})
+                    )
+                )
+            ) rrr
         on
-            rs.route_id = tt.route_id
+            rrr.route_id = tt.route_id
         where
-            rs.route_id is not null
+            rrr.route_id is not null
             and
-            tt.weekday = %s
+            tt.weekday = {weekday}
         order by
             tt.time
-    """ % (
-        trains.core.models.Timetable._meta.db_table,
-        trains.core.models.RouteStation._meta.db_table,
-        trains.core.models.RouteStation._meta.db_table,
-        start,
-        end,
-        weekday,
+    """.format(
+        directionstation=trains.core.models.DirectionStation._meta.db_table,
+        routestation=trains.core.models.RouteStation._meta.db_table,
+        route=trains.core.models.Route._meta.db_table,
+        timetable=trains.core.models.Timetable._meta.db_table,
+        start=start,
+        end=end,
+        weekday=weekday,
     ))
     return cursor.fetchall()
 
