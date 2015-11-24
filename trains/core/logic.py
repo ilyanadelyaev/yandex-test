@@ -1,6 +1,6 @@
 import django.db
 
-import core.models
+import trains.core.models
 
 
 class SearchExcepton(Exception):
@@ -26,8 +26,8 @@ def __nodes():
             and
             abs(ds1.position - ds2.position) = 1
     """ % (
-        core.models.DirectionStation._meta.db_table,
-        core.models.DirectionStation._meta.db_table,
+        trains.core.models.DirectionStation._meta.db_table,
+        trains.core.models.DirectionStation._meta.db_table,
     ))
     return cursor.fetchall()
 
@@ -65,9 +65,9 @@ def __find_routes(start, end, weekday):
         order by
             tt.time
     """ % (
-        core.models.Timetable._meta.db_table,
-        core.models.RouteStation._meta.db_table,
-        core.models.RouteStation._meta.db_table,
+        trains.core.models.Timetable._meta.db_table,
+        trains.core.models.RouteStation._meta.db_table,
+        trains.core.models.RouteStation._meta.db_table,
         start,
         end,
         weekday,
@@ -139,10 +139,10 @@ def search_routes(start, end, weekday):
         for i in routes:
             s, e, d, rr = i
             ret.append((
-                core.models.Station.objects.get(pk=s),
-                core.models.Station.objects.get(pk=e),
-                core.models.Direction.objects.get(pk=d),
-                [((core.models.Route.objects.get(pk=r), t)) for r, t in rr],
+                trains.core.models.Station.objects.get(pk=s),
+                trains.core.models.Station.objects.get(pk=e),
+                trains.core.models.Direction.objects.get(pk=d),
+                [((trains.core.models.Route.objects.get(pk=r), t)) for r, t in rr],
             ))
         return ret
 

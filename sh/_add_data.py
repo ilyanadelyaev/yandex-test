@@ -1,6 +1,6 @@
 import datetime
 
-import core.models
+import trains.core.models
 
 
 print None  # make new line
@@ -23,7 +23,7 @@ stations = [
 
 for station in stations:
     print 'Add station "{}"'.format(station)
-    core.models.Station(name=station).save()
+    trains.core.models.Station(name=station).save()
 
 
 print '-' * 40
@@ -42,7 +42,7 @@ directions = [
 
 for direction in directions:
     print 'Add directions "{}"'.format(direction)
-    core.models.Direction(name=direction).save()
+    trains.core.models.Direction(name=direction).save()
 
 
 print '-' * 40
@@ -72,8 +72,8 @@ directionstation = [
 
 for direction, station, position in directionstation:
     print 'Add station "{}" to direction "()" with pos: "{}"'.format(station, direction, position)
-    core.models.Direction.objects.filter(name=direction).first().directionstation_set.create(
-            station=core.models.Station.objects.filter(name=station).first(),
+    trains.core.models.Direction.objects.filter(name=direction).first().directionstation_set.create(
+            station=trains.core.models.Station.objects.filter(name=station).first(),
             position=position,
     )
 
@@ -106,9 +106,9 @@ routes = [
 
 for route, direction in routes:
     print 'Add route "{}" for direction "{}"'.format(route, direction)
-    core.models.Route(
+    trains.core.models.Route(
         name=route,
-        direction=core.models.Direction.objects.filter(name=direction).first()
+        direction=trains.core.models.Direction.objects.filter(name=direction).first()
     ).save()
 
 
@@ -190,8 +190,8 @@ for route, station, position, wait_time, move_time in routestation:
     wait_time = datetime.timedelta(hours=wait_time.hour, minutes=wait_time.minute)
     move_time = datetime.datetime.strptime(move_time, '%H:%M')
     move_time = datetime.timedelta(hours=move_time.hour, minutes=move_time.minute)
-    core.models.Route.objects.filter(name=route).first().routestation_set.create(
-        station=core.models.Station.objects.filter(name=station).first(),
+    trains.core.models.Route.objects.filter(name=route).first().routestation_set.create(
+        station=trains.core.models.Station.objects.filter(name=station).first(),
         position=position,
         wait_time=wait_time,
         move_time=move_time,
@@ -226,7 +226,7 @@ timetable = [
 for route, weekday, time in timetable:
     print 'Timetable for route "{}", weekday: "{}", time: "{}"'.format(route, weekday, time)
     time = datetime.datetime.strptime(time, '%H:%M')
-    core.models.Route.objects.filter(name=route).first().timetable_set.create(
+    trains.core.models.Route.objects.filter(name=route).first().timetable_set.create(
         weekday=weekday,
         time=time,
     )

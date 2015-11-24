@@ -4,8 +4,8 @@ import django.db.models
 
 import django.http
 
-import core.models
-import core.logic
+import trains.core.models
+import trains.core.logic
 
 
 def _station_dict(o, extended=False):
@@ -82,8 +82,8 @@ class SearchAPI(API):
 
         error = None
         try:
-            routes = core.logic.search_routes(start_station, end_station, weekday)
-        except core.logic.SearchExcepton as ex:
+            routes = trains.core.logic.search_routes(start_station, end_station, weekday)
+        except trains.core.logic.SearchExcepton as ex:
             error = str(ex)
 
         ret = {}
@@ -91,9 +91,9 @@ class SearchAPI(API):
         if error:
             ret['error'] = error
         else:
-            ret['start_station'] = _station_dict(core.models.Station.objects.get(pk=start_station))
-            ret['end_station'] = _station_dict(core.models.Station.objects.get(pk=end_station))
-            ret['weekday'] = core.models.Weekday(int(weekday))
+            ret['start_station'] = _station_dict(trains.core.models.Station.objects.get(pk=start_station))
+            ret['end_station'] = _station_dict(trains.core.models.Station.objects.get(pk=end_station))
+            ret['weekday'] = trains.core.models.Weekday(int(weekday))
 
             rr = ret.setdefault('path', [])
             for start, end, direction, route in routes:
@@ -110,7 +110,7 @@ class SearchAPI(API):
 class ViewAPI(API):
     @classmethod
     def station(cls, request, pk):
-        o = core.models.Station.objects.filter(pk=pk).first()
+        o = trains.core.models.Station.objects.filter(pk=pk).first()
         ret = _station_dict(o, extended=True)
         ret['directionstation'] = [_directionstation_dict(ds) for ds in o.directionstation_set.all()]
         ret['routesstation'] = [_routestation_dict(rs) for rs in o.routestation_set.all()]
@@ -118,12 +118,12 @@ class ViewAPI(API):
 
     @classmethod
     def stations_list(cls, request):
-        ret = [_station_dict(s, extended=True) for s in core.models.Station.objects.all()]
+        ret = [_station_dict(s, extended=True) for s in trains.core.models.Station.objects.all()]
         return cls._response(json.dumps(ret))
 
     @classmethod
     def direction(cls, request, pk):
-        o = core.models.Direction.objects.filter(pk=pk).first()
+        o = trains.core.models.Direction.objects.filter(pk=pk).first()
         ret = _direction_dict(o, extended=True)
         ret['directionstation'] = [_directionstation_dict(ds) for ds in o.directionstation_set.all()]
         ret['route'] = [_route_dict(r, extended=True) for r in o.route_set.all()]
@@ -131,12 +131,12 @@ class ViewAPI(API):
 
     @classmethod
     def directions_list(cls, request):
-        ret = [_direction_dict(d, extended=True) for d in core.models.Direction.objects.all()]
+        ret = [_direction_dict(d, extended=True) for d in trains.core.models.Direction.objects.all()]
         return cls._response(json.dumps(ret))
 
     @classmethod
     def route(cls, request, pk):
-        o = core.models.Route.objects.filter(pk=pk).first()
+        o = trains.core.models.Route.objects.filter(pk=pk).first()
         ret = _route_dict(o, extended=True)
         ret['routesstation'] = [_routestation_dict(rs) for rs in o.routestation_set.all()]
         ret['timetable'] = [_timetable_dict(t) for t in o.timetable_set.all()]
@@ -144,10 +144,10 @@ class ViewAPI(API):
 
     @classmethod
     def routes_list(cls, request):
-        ret = [_route_dict(r, extended=True) for r in core.models.Route.objects.all()]
+        ret = [_route_dict(r, extended=True) for r in trains.core.models.Route.objects.all()]
         return cls._response(json.dumps(ret))
 
     @classmethod
     def weekdays_list(cls, request):
-        ret = list(core.models.Weekday.choices)
+        ret = list(trains.core.models.Weekday.choices)
         return cls._response(json.dumps(ret))
