@@ -43,10 +43,13 @@ def _route_dict(o, extended=False):
         'direction': {'id': o.direction.id, 'name': o.direction.name},
     }
     if extended:
-        ret['travel_time'] = str(
-            o.routestation_set.aggregate(django.db.models.Sum('move_time'))['move_time__sum'] + \
-            o.routestation_set.aggregate(django.db.models.Sum('wait_time'))['wait_time__sum']
-        ),
+        traveltime = '-'
+        if o.routestation_set.count():
+            traveltime = str(
+                o.routestation_set.aggregate(django.db.models.Sum('move_time'))['move_time__sum'] + \
+                o.routestation_set.aggregate(django.db.models.Sum('wait_time'))['wait_time__sum']
+            )
+        ret['travel_time'] = traveltime
         ret['station_count'] = o.routestation_set.count(),
         ret['timetable_count'] = o.timetable_set.count(),
     return ret
