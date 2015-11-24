@@ -9,9 +9,9 @@ class Enum(object):
     def _to_str(cls, wd):
         try:
             wd = int(wd)
-        except ValueError:
-            return ''
-        return cls._choices.get(wd, '')
+        except (ValueError, TypeError):
+            return None
+        return cls._choices.get(wd, None)
 
 
 class Weekday(Enum):
@@ -37,7 +37,7 @@ class Weekday(Enum):
 
 
 class TimeInterval(Enum):
-    _0_24 = 0
+    _all = 0
     _0_9 = 1
     _9_12 = 2
     _12_15 = 3
@@ -45,7 +45,7 @@ class TimeInterval(Enum):
     _21_24 = 5
 
     choices = (
-        (_0_24, (0, 24)),
+        (_all, None),
         (_0_9, (0, 9)),
         (_9_12, (9, 12)),
         (_12_15, (12, 15)),

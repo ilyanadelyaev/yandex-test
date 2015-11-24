@@ -188,9 +188,9 @@ class WeekdayTests(django.test.TestCase):
         )
 
     def test__conversion__invalid(self):
-        self.assertEqual(trains.core.tools.Weekday(-1), '')
-        self.assertEqual(trains.core.tools.Weekday('7'), '')
-        self.assertEqual(trains.core.tools.Weekday('a'), '')
+        self.assertEqual(trains.core.tools.Weekday(-1), None)
+        self.assertEqual(trains.core.tools.Weekday('7'), None)
+        self.assertEqual(trains.core.tools.Weekday('a'), None)
 
 
 class TimetableModelTests(django.test.TestCase):

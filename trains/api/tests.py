@@ -279,5 +279,5 @@ class ViewAPITests(django.test.TestCase):
         resp = self.client.get('/api/tools/', {'tool': 'timeintervals'})
         self.assertEqual(resp.status_code, 200)
         content = json.loads(resp.content)
-        self.assertIn([0, [0, 24]], content)
+        self.assertIn([0, None], content)
         self.assertIn([5, [21, 24]], content)
