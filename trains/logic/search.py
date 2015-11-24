@@ -228,19 +228,22 @@ def search_routes(start, end, date, timeinterval):
     # find suitable routes
     routes = [(s, e, d, __find_routes(s, e, weekday, timeinterval)) for s, d, e in pp]
 
-    def __routes_with_models(routes):
+    def __to_models(routes):
         ret = []
         for i in routes:
             s, e, d, rr = i
-            ret.append((
-                trains.core.models.Station.objects.get(pk=s),
-                trains.core.models.Station.objects.get(pk=e),
-                trains.core.models.Direction.objects.get(pk=d),
-                [((trains.core.models.Route.objects.get(pk=r), t)) for r, t in rr],
-            ))
+            ret.append({
+                'start_station': trains.core.models.Station.objects.get(pk=s),
+                'end_station': trains.core.models.Station.objects.get(pk=e),
+                'direction': trains.core.models.Direction.objects.get(pk=d),
+                'routes': [{
+                    'route': trains.core.models.Route.objects.get(pk=r),
+                    'time': t,
+                } for r, t in rr],
+            })
         return ret
 
-    return __routes_with_models(routes)
+    return __to_models(routes)
 
 
 def check_consistency():

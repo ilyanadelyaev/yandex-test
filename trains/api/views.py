@@ -105,12 +105,12 @@ class SearchAPI(API):
             ret['date'] = date
 
             rr = ret.setdefault('path', [])
-            for start, end, direction, route in routes:
+            for obj in routes:
                 rr.append({
-                    'start_station': _station_dict(start),
-                    'end_station': _station_dict(end),
-                    'direction': _direction_dict(direction),
-                    'routes': [{'route': _route_dict(r), 'time': str(t)} for r, t in route]
+                    'start_station': _station_dict(obj['start_station']),
+                    'end_station': _station_dict(obj['end_station']),
+                    'direction': _direction_dict(obj['direction']),
+                    'routes': [{'route': _route_dict(o['route']), 'time': str(o['time'])} for o in obj['routes']]
                 })
 
         return cls._response(json.dumps(ret))
