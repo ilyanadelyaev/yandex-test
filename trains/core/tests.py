@@ -169,28 +169,28 @@ class RouteStationModelTests(django.test.TestCase):
 class WeekdayTests(django.test.TestCase):
     def test__conversion__int(self):
         wd = filter(
-            lambda x: x[0] == trains.core.models.Weekday.wednesday,
-            trains.core.models.Weekday.choices
+            lambda x: x[0] == trains.core.tools.Weekday.wednesday,
+            trains.core.tools.Weekday.choices
         )[0][1]
         self.assertEqual(
             wd,
-            trains.core.models.Weekday(trains.core.models.Weekday.wednesday)
+            trains.core.tools.Weekday(trains.core.tools.Weekday.wednesday)
         )
 
     def test__conversion__str(self):
         wd = filter(
-            lambda x: x[0] == trains.core.models.Weekday.monday,
-            trains.core.models.Weekday.choices
+            lambda x: x[0] == trains.core.tools.Weekday.monday,
+            trains.core.tools.Weekday.choices
         )[0][1]
         self.assertEqual(
             wd,
-            trains.core.models.Weekday('0')
+            trains.core.tools.Weekday('0')
         )
 
     def test__conversion__invalid(self):
-        self.assertEqual(trains.core.models.Weekday(-1), '')
-        self.assertEqual(trains.core.models.Weekday('7'), '')
-        self.assertEqual(trains.core.models.Weekday('a'), '')
+        self.assertEqual(trains.core.tools.Weekday(-1), '')
+        self.assertEqual(trains.core.tools.Weekday('7'), '')
+        self.assertEqual(trains.core.tools.Weekday('a'), '')
 
 
 class TimetableModelTests(django.test.TestCase):

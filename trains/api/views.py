@@ -153,6 +153,11 @@ class ViewAPI(API):
         return cls._response(json.dumps(ret))
 
     @classmethod
-    def weekdays_list(cls, request):
-        ret = list(trains.core.models.Weekday.choices)
+    def tools(cls, request):
+        tool = request.GET.get('tool', '')
+        ret = ''
+        if tool == 'weekdays':
+            ret = list(trains.core.tools.Weekday.choices)
+        elif tool == 'timeintervals':
+            ret = list(trains.core.tools.TimeInterval.choices)
         return cls._response(json.dumps(ret))
