@@ -9,6 +9,7 @@ class Station(django.db.models.Model):
     def __unicode__(self):
         return '{} [{}]'.format(self.name, self.id)
 
+    #TODO: drop me
     def directionstation_list(self):
         return self.directionstation_set.all()
 
