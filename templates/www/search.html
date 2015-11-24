@@ -29,6 +29,13 @@
                     </div>
                 </div>
 
+                <div class="form-group">
+                    <label for="timeinterval_input">Time interval:</label>
+                    <select class="form-control" id="timeinterval_input"
+                        name="timeinterval">
+                    </select>
+                </div>
+
                 <input class="btn btn-success" value="search" onclick="search();" />
             </form>
         </div>
@@ -103,6 +110,20 @@
                     $('#end_station_input').append(el);
                 });
             });
+
+            $.getJSON('/api/tools/?tool=timeintervals', function( o ) {
+                $.each( o, function( i, ti ) {
+                    var text = '';
+                    if ( ti[1] )
+                        text = ti[1][0] + ' - ' + ti[1][1];
+                    else
+                        text = 'ALL';
+                    var el = '<option value="' + ti[0] + '">'
+                        + text + '</option>';
+                    $('#timeinterval_input').append(el);
+                });
+            });
+
         });
     </script>
 {% endblock %}

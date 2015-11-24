@@ -85,9 +85,13 @@ class SearchAPI(API):
         end_station = request.GET.get('end_station')
         date = request.GET.get('date')
 
+        timeinterval = request.GET.get('timeinterval')
+        timeinterval = trains.core.tools.TimeInterval(timeinterval)
+
         error = None
         try:
-            routes = trains.logic.search.search_routes(start_station, end_station, date)
+            routes = trains.logic.search.search_routes(
+                start_station, end_station, date, timeinterval)
         except trains.logic.errors.SearchExcepton as ex:
             error = str(ex)
 

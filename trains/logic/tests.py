@@ -95,7 +95,7 @@ class SearchLogicTests(django.test.TestCase):
         d = trains.core.models.Direction.objects.get(name='Moscow - Saint-Petersburg')
         r = trains.core.models.Route.objects.get(name='Saint-Petersburg - Moscow')
         tt = trains.core.models.Timetable.objects.filter(route=r).first()
-        ret = trains.logic.search.search_routes(s1.id, s2.id, '11/16/2015')
+        ret = trains.logic.search.search_routes(s1.id, s2.id, '11/16/2015', None)
         self.assertEqual(ret[0][0], s1)
         self.assertEqual(ret[0][1], s2)
         self.assertEqual(ret[0][2], d)
@@ -112,7 +112,7 @@ class SearchLogicTests(django.test.TestCase):
         r2 = trains.core.models.Route.objects.get(name='Saint-Petersburg - Helsinki')
         tt1 = trains.core.models.Timetable.objects.filter(route=r1).first()
         tt2 = trains.core.models.Timetable.objects.filter(route=r2).first()
-        ret = trains.logic.search.search_routes(s1.id, s3.id, '11/16/2015')
+        ret = trains.logic.search.search_routes(s1.id, s3.id, '11/16/2015', None)
         self.assertEqual(ret[0][0], s1)
         self.assertEqual(ret[0][1], s2)
         self.assertEqual(ret[0][2], d1)
@@ -126,20 +126,20 @@ class SearchLogicTests(django.test.TestCase):
 
     def test__search__invalid_arguments(self):
         with self.assertRaises(trains.logic.errors.InvalidSearchArguments):
-            trains.logic.search.search_routes('a', 'b', '11/16/2015')
+            trains.logic.search.search_routes('a', 'b', '11/16/2015', None)
 
     def test__search__equal_start_end_stations(self):
         with self.assertRaises(trains.logic.errors.InvalidSearchArguments):
-            trains.logic.search.search_routes(1, 1, '11/16/2015')
+            trains.logic.search.search_routes(1, 1, '11/16/2015', None)
 
     def test__search__unbound_stations(self):
         s1 = trains.core.models.Station.objects.get(name='International Space Station')
         s2 = trains.core.models.Station.objects.get(name='Saint-Petersburg')
         with self.assertRaises(trains.logic.errors.UnboundedStations):
-            trains.logic.search.search_routes(s1.id, s2.id, '11/16/2015')
+            trains.logic.search.search_routes(s1.id, s2.id, '11/16/2015', None)
 
     def test__search__empty_route(self):
         s1 = trains.core.models.Station.objects.get(name='Saint-Petersburg')
         s2 = trains.core.models.Station.objects.get(name='Moscow')
-        ret = trains.logic.search.search_routes(s1.id, s2.id, '11/17/2015')
+        ret = trains.logic.search.search_routes(s1.id, s2.id, '11/17/2015', None)
         self.assertFalse(ret[0][3])

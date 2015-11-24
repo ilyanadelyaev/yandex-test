@@ -145,7 +145,7 @@ def __find_routes(start, end, weekday):
     return cursor.fetchall()
 
 
-def search_routes(start, end, date):
+def search_routes(start, end, date, timeinterval):
     try:
         start = int(start)
     except (ValueError, TypeError):
