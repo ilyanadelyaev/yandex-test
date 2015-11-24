@@ -1,10 +1,7 @@
 import django.db
 
 import trains.core.models
-
-
-class SearchExcepton(Exception):
-    pass
+import trains.logic.errors
 
 
 def __nodes():
@@ -81,10 +78,12 @@ def search_routes(start, end, weekday):
         end = int(end)
         weekday = int(weekday)
     except ValueError:
-        raise SearchExcepton('Ivalid arguments list: {}'.format(str((start, end, weekday))))
+        raise trains.logic.errors.SearchExcepton(
+            'Ivalid arguments list: {}'.format(str((start, end, weekday))))
 
     if start == end:
-        raise SearchExcepton('start == end: {} == {}'.format(start, end))
+        raise trains.logic.errors.SearchExcepton(
+            'start == end: {} == {}'.format(start, end))
 
     nodes = __nodes()
 
@@ -110,7 +109,8 @@ def search_routes(start, end, weekday):
     _process(start, nodes[:])
 
     if not paths:
-        raise SearchExcepton('Unbounded stations')
+        raise trains.logic.errors.SearchExcepton(
+            'Unbounded stations')
 
     # TODO: give path size by time
     path = min(paths, key=len)

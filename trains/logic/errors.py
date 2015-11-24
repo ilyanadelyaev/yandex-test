@@ -1,0 +1,2 @@
+class SearchExcepton(Exception):
+    pass

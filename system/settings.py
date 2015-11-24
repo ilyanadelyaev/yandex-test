@@ -38,6 +38,7 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'trains.core',
+    'trains.logic',
     'trains.api',
     'trains.www',
 )

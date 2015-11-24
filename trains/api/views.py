@@ -5,7 +5,8 @@ import django.db.models
 import django.http
 
 import trains.core.models
-import trains.core.logic
+import trains.logic.search
+import trains.logic.errors
 
 
 def _station_dict(o, extended=False):
@@ -82,8 +83,8 @@ class SearchAPI(API):
 
         error = None
         try:
-            routes = trains.core.logic.search_routes(start_station, end_station, weekday)
-        except trains.core.logic.SearchExcepton as ex:
+            routes = trains.logic.search.search_routes(start_station, end_station, weekday)
+        except trains.logic.errors.SearchExcepton as ex:
             error = str(ex)
 
         ret = {}
