@@ -124,6 +124,16 @@ class SearchLogicTests(django.test.TestCase):
         self.assertEqual(ret[1][3][0][0], r2)
         self.assertEqual(ret[1][3][0][1], tt2.time)
 
+    def test__search__out_of_timeinterval(self):
+        s1 = trains.core.models.Station.objects.get(name='Moscow')
+        s2 = trains.core.models.Station.objects.get(name='Saint-Petersburg')
+        ret = trains.logic.search.search_routes(s1.id, s2.id, '11/16/2015', [0, 1])
+        self.assertFalse(ret[0][3])
+
+    def test__search__invalid_timeinterval(self):
+        with self.assertRaises(trains.logic.errors.InvalidSearchArguments):
+            trains.logic.search.search_routes(1, 2, '11/16/2015', [0, 25])
+
     def test__search__invalid_arguments(self):
         with self.assertRaises(trains.logic.errors.InvalidSearchArguments):
             trains.logic.search.search_routes('a', 'b', '11/16/2015', None)

@@ -31,7 +31,7 @@ def __nodes():
     return cursor.fetchall()
 
 
-def __find_routes(start, end, weekday):
+def __find_routes(start, end, weekday, timeinterval):
     """
     find route for selected stations
     --
@@ -131,6 +131,10 @@ def __find_routes(start, end, weekday):
             rrr.route_id is not null
             and
             tt.weekday = {weekday}
+            and
+            tt.time >= "{timeinterval_start}"
+            and
+            tt.time <= "{timeinterval_end}"
         order by
             tt.time
     """.format(
@@ -141,6 +145,8 @@ def __find_routes(start, end, weekday):
         start=start,
         end=end,
         weekday=weekday,
+        timeinterval_start=timeinterval[0],
+        timeinterval_end=timeinterval[1],
     ))
     return cursor.fetchall()
 
@@ -161,6 +167,14 @@ def search_routes(start, end, date, timeinterval):
     except ValueError:
         raise trains.logic.errors.InvalidSearchArguments(
             'Invalid: DATE argument must be "MM/DD/YYYY". DATE = "{}"'.format(date))
+
+    if timeinterval is None:
+        timeinterval = (0, 24)
+    try:
+        timeinterval = (datetime.time(timeinterval[0], 0), datetime.time(timeinterval[1] - 1, 59))
+    except ValueError:
+        raise trains.logic.errors.InvalidSearchArguments(
+            'Invalid: TIMEINTERVAL values must be [ (0..24), (0..24) ]. TIMEINTERVAL = "{}"'.format(timeinterval))
 
     if start == end:
         raise trains.logic.errors.InvalidSearchArguments(
@@ -212,7 +226,7 @@ def search_routes(start, end, date, timeinterval):
     pp.append((st, dr, ed))
 
     # find suitable routes
-    routes = [(s, e, d, __find_routes(s, e, weekday)) for s, d, e in pp]
+    routes = [(s, e, d, __find_routes(s, e, weekday, timeinterval)) for s, d, e in pp]
 
     def __routes_with_models(routes):
         ret = []
