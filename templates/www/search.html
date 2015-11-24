@@ -71,7 +71,7 @@
                     $('#id_end_station').append(el);
                 });
             });
-            $.getJSON('/api/tools/?tool=weekday', function( o ) {
+            $.getJSON('/api/weekday/', function( o ) {
                 $.each( o, function( i, w ) {
                     var el = '<option value="' + w[0] + '">' + w[1] + '</option>';
                     $('#id_weekday').append(el);

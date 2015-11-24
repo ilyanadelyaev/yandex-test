@@ -6,7 +6,6 @@ import django.http
 
 import core.models
 import core.logic
-import lib.tools
 
 
 def _station_dict(o, extended=False):
@@ -73,13 +72,6 @@ class API(object):
     def _response(data):
         return django.http.HttpResponse(data, content_type='application/json')
 
-    @classmethod
-    def tools(cls, request):
-        ret = []
-        if request.GET.get('tool') == 'weekday':
-            ret = list(lib.tools.Weekday.choices)
-        return cls._response(json.dumps(ret))
-
 
 class SearchAPI(API):
     @classmethod
@@ -101,7 +93,7 @@ class SearchAPI(API):
         else:
             ret['start_station'] = _station_dict(core.models.Station.objects.get(pk=start_station))
             ret['end_station'] = _station_dict(core.models.Station.objects.get(pk=end_station))
-            ret['weekday'] = lib.tools.Weekday(int(weekday))
+            ret['weekday'] = core.models.Weekday(int(weekday))
 
             rr = ret.setdefault('path', [])
             for start, end, direction, route in routes:
@@ -153,4 +145,9 @@ class ViewAPI(API):
     @classmethod
     def routes_list(cls, request):
         ret = [_route_dict(r, extended=True) for r in core.models.Route.objects.all()]
+        return cls._response(json.dumps(ret))
+
+    @classmethod
+    def weekdays_list(cls, request):
+        ret = list(core.models.Weekday.choices)
         return cls._response(json.dumps(ret))

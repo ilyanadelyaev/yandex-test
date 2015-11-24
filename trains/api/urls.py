@@ -12,6 +12,5 @@ urlpatterns = [
     django.conf.urls.url(r'^direction/$', trains.api.views.ViewAPI.directions_list, name='directions_list'),
     django.conf.urls.url(r'^route/(?P<pk>[0-9]+)/$', trains.api.views.ViewAPI.route, name='route'),
     django.conf.urls.url(r'^route/$', trains.api.views.ViewAPI.routes_list, name='routes_list'),
-
-    django.conf.urls.url(r'^tools/$', trains.api.views.API.tools, name='tools'),
+    django.conf.urls.url(r'^weekday/$', trains.api.views.ViewAPI.weekdays_list, name='weekdays_list'),
 ]
