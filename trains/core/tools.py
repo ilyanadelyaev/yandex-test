@@ -1,7 +1,8 @@
 class _EnumMeta(type):
-    def __new__(cls, name, bases, dct):
-        dct['_choices'] = dict(dct['choices']) if 'choices' in dct else dict()
-        return super(_EnumMeta, cls).__new__(cls, name, bases, dct)
+    def __init__(cls, name, bases, dct):
+        super(_EnumMeta, cls).__init__(name, bases, dct)
+        cls._choices = dict(cls.__dict__['choices']) \
+            if 'choices' in cls.__dict__ else dict()
 
     def __call__(cls, wd):
         return cls._to_str(wd)
