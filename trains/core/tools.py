@@ -1,9 +1,14 @@
-class Enum(object):
-    class __Meta(type):
-        def __call__(cls, wd):
-            return cls._to_str(wd)
+class _EnumMeta(type):
+    def __new__(cls, name, bases, dct):
+        dct['_choices'] = dict(dct['choices']) if 'choices' in dct else dict()
+        return super(_EnumMeta, cls).__new__(cls, name, bases, dct)
 
-    __metaclass__ = __Meta
+    def __call__(cls, wd):
+        return cls._to_str(wd)
+
+
+class Enum(object):
+    __metaclass__ = _EnumMeta
 
     @classmethod
     def _to_str(cls, wd):
@@ -33,8 +38,6 @@ class Weekday(Enum):
         (sunday, 'Sunday'),
     )
 
-    _choices = dict(choices)
-
 
 class TimeInterval(Enum):
     _all = 0
@@ -52,5 +55,3 @@ class TimeInterval(Enum):
         (_15_21, (15, 21)),
         (_21_24, (21, 24)),
     )
-
-    _choices = dict(choices)
