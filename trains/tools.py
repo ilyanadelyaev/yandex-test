@@ -4,20 +4,20 @@ class _EnumMeta(type):
         cls._choices = dict(cls.__dict__['choices']) \
             if 'choices' in cls.__dict__ else dict()
 
-    def __call__(cls, wd):
-        return cls._to_str(wd)
+    def __call__(cls, key):
+        return cls._to_str(key)
 
 
 class Enum(object):
     __metaclass__ = _EnumMeta
 
     @classmethod
-    def _to_str(cls, wd):
+    def _to_str(cls, key):
         try:
-            wd = int(wd)
+            key = int(key)
         except (ValueError, TypeError):
             return None
-        return cls._choices.get(wd, None)
+        return cls._choices.get(key, None)
 
 
 class Weekday(Enum):

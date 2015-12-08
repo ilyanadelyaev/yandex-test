@@ -2,7 +2,7 @@ import datetime
 
 import django.db
 
-import trains.core.models
+import trains.models
 import trains.logic.errors
 
 
@@ -25,8 +25,8 @@ def __nodes():
             and
             abs(ds1.position - ds2.position) = 1
     """ % (
-        trains.core.models.DirectionStation._meta.db_table,
-        trains.core.models.DirectionStation._meta.db_table,
+        trains.models.DirectionStation._meta.db_table,
+        trains.models.DirectionStation._meta.db_table,
     ))
     return cursor.fetchall()
 
@@ -138,10 +138,10 @@ def __find_routes(start, end, weekday, timeinterval):
         order by
             tt.time
     """.format(
-        directionstation=trains.core.models.DirectionStation._meta.db_table,
-        routestation=trains.core.models.RouteStation._meta.db_table,
-        route=trains.core.models.Route._meta.db_table,
-        timetable=trains.core.models.Timetable._meta.db_table,
+        directionstation=trains.models.DirectionStation._meta.db_table,
+        routestation=trains.models.RouteStation._meta.db_table,
+        route=trains.models.Route._meta.db_table,
+        timetable=trains.models.Timetable._meta.db_table,
         start=start,
         end=end,
         weekday=weekday,
@@ -233,11 +233,11 @@ def search_routes(start, end, date, timeinterval):
         for i in routes:
             s, e, d, rr = i
             ret.append({
-                'start_station': trains.core.models.Station.objects.get(pk=s),
-                'end_station': trains.core.models.Station.objects.get(pk=e),
-                'direction': trains.core.models.Direction.objects.get(pk=d),
+                'start_station': trains.models.Station.objects.get(pk=s),
+                'end_station': trains.models.Station.objects.get(pk=e),
+                'direction': trains.models.Direction.objects.get(pk=d),
                 'routes': [{
-                    'route': trains.core.models.Route.objects.get(pk=r),
+                    'route': trains.models.Route.objects.get(pk=r),
                     'time': t,
                 } for r, t in rr],
             })

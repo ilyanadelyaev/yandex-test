@@ -4,8 +4,8 @@ import django.db.models
 
 import django.http
 
-import trains.core.models
-import trains.core.tools
+import trains.models
+import trains.tools
 import trains.logic.search
 import trains.logic.errors
 
@@ -68,7 +68,7 @@ def _routestation_dict(o):
 def _timetable_dict(o):
     return {
         'route': {'id': o.route.id, 'name': o.route.name},
-        'weekday': trains.core.tools.Weekday(o.weekday),
+        'weekday': trains.tools.Weekday(o.weekday),
         'time': str(o.time),
     }
 
@@ -87,7 +87,7 @@ class SearchAPI(API):
         date = request.GET.get('date')
 
         timeinterval = request.GET.get('timeinterval')
-        timeinterval = trains.core.tools.TimeInterval(timeinterval)
+        timeinterval = trains.tools.TimeInterval(timeinterval)
 
         error = None
         try:
@@ -101,8 +101,8 @@ class SearchAPI(API):
         if error:
             ret['error'] = error
         else:
-            ret['start_station'] = _station_dict(trains.core.models.Station.objects.get(pk=start_station))
-            ret['end_station'] = _station_dict(trains.core.models.Station.objects.get(pk=end_station))
+            ret['start_station'] = _station_dict(trains.models.Station.objects.get(pk=start_station))
+            ret['end_station'] = _station_dict(trains.models.Station.objects.get(pk=end_station))
             ret['date'] = date
 
             rr = ret.setdefault('path', [])
@@ -120,7 +120,7 @@ class SearchAPI(API):
 class ViewAPI(API):
     @classmethod
     def station(cls, request, pk):
-        o = trains.core.models.Station.objects.filter(pk=pk).first()
+        o = trains.models.Station.objects.filter(pk=pk).first()
         ret = _station_dict(o, extended=True)
         ret['directionstation'] = [_directionstation_dict(ds) for ds in o.directionstation_set.all()]
         ret['routesstation'] = [_routestation_dict(rs) for rs in o.routestation_set.all()]
@@ -128,12 +128,12 @@ class ViewAPI(API):
 
     @classmethod
     def stations_list(cls, request):
-        ret = [_station_dict(s, extended=True) for s in trains.core.models.Station.objects.all()]
+        ret = [_station_dict(s, extended=True) for s in trains.models.Station.objects.all()]
         return cls._response(json.dumps(ret))
 
     @classmethod
     def direction(cls, request, pk):
-        o = trains.core.models.Direction.objects.filter(pk=pk).first()
+        o = trains.models.Direction.objects.filter(pk=pk).first()
         ret = _direction_dict(o, extended=True)
         ret['directionstation'] = [_directionstation_dict(ds) for ds in o.directionstation_set.all()]
         ret['route'] = [_route_dict(r, extended=True) for r in o.route_set.all()]
@@ -141,12 +141,12 @@ class ViewAPI(API):
 
     @classmethod
     def directions_list(cls, request):
-        ret = [_direction_dict(d, extended=True) for d in trains.core.models.Direction.objects.all()]
+        ret = [_direction_dict(d, extended=True) for d in trains.models.Direction.objects.all()]
         return cls._response(json.dumps(ret))
 
     @classmethod
     def route(cls, request, pk):
-        o = trains.core.models.Route.objects.filter(pk=pk).first()
+        o = trains.models.Route.objects.filter(pk=pk).first()
         ret = _route_dict(o, extended=True)
         ret['routesstation'] = [_routestation_dict(rs) for rs in o.routestation_set.all()]
         ret['timetable'] = [_timetable_dict(t) for t in o.timetable_set.all()]
@@ -154,7 +154,7 @@ class ViewAPI(API):
 
     @classmethod
     def routes_list(cls, request):
-        ret = [_route_dict(r, extended=True) for r in trains.core.models.Route.objects.all()]
+        ret = [_route_dict(r, extended=True) for r in trains.models.Route.objects.all()]
         return cls._response(json.dumps(ret))
 
     @classmethod
@@ -162,7 +162,7 @@ class ViewAPI(API):
         tool = request.GET.get('tool', '')
         ret = ''
         if tool == 'weekdays':
-            ret = list(trains.core.tools.Weekday.choices)
+            ret = list(trains.tools.Weekday.choices)
         elif tool == 'timeintervals':
-            ret = list(trains.core.tools.TimeInterval.choices)
+            ret = list(trains.tools.TimeInterval.choices)
         return cls._response(json.dumps(ret))

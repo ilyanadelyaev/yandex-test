@@ -3,23 +3,23 @@ import datetime
 
 import django.test
 
-import trains.core.models
+import trains.models
 
 
 class StationModelTests(django.test.TestCase):
     def test__has_fields(self):
         sn = str(uuid.uuid4())
-        s = trains.core.models.Station(name=sn)
+        s = trains.models.Station(name=sn)
         s.save()
-        s = trains.core.models.Station.objects.get(pk=s.id)
+        s = trains.models.Station.objects.get(pk=s.id)
         self.assertEqual(s.name, sn)
 
     def test__directionstation_list(self):
         sn = str(uuid.uuid4())
-        s = trains.core.models.Station(name=sn)
+        s = trains.models.Station(name=sn)
         s.save()
         dn = str(uuid.uuid4())
-        d = trains.core.models.Direction(name=dn)
+        d = trains.models.Direction(name=dn)
         d.save()
         self.assertEqual(len(s.directionstation_list()), 0)
         s.directionstation_set.create(direction=d, position=1)
@@ -31,37 +31,37 @@ class StationModelTests(django.test.TestCase):
 class DirectionModelTests(django.test.TestCase):
     def test__has_fields(self):
         dn = str(uuid.uuid4())
-        d = trains.core.models.Direction(name=dn)
+        d = trains.models.Direction(name=dn)
         d.save()
-        d = trains.core.models.Direction.objects.get(pk=d.id)
+        d = trains.models.Direction.objects.get(pk=d.id)
         self.assertEqual(d.name, dn)
 
 
 class DirectionStationModelTests(django.test.TestCase):
     def test__direct_creation(self):
         sn = str(uuid.uuid4())
-        s = trains.core.models.Station(name=sn)
+        s = trains.models.Station(name=sn)
         s.save()
         dn = str(uuid.uuid4())
-        d = trains.core.models.Direction(name=dn)
+        d = trains.models.Direction(name=dn)
         d.save()
-        ds = trains.core.models.DirectionStation(
+        ds = trains.models.DirectionStation(
             direction=d, station=s, position=4)
         ds.save()
-        ds = trains.core.models.DirectionStation.objects.filter(pk=ds.id).first()
+        ds = trains.models.DirectionStation.objects.filter(pk=ds.id).first()
         self.assertEqual(ds.direction.name, dn)
         self.assertEqual(ds.station.name, sn)
         self.assertEqual(ds.position, 4)
 
     def test__via_direction(self):
         sn = str(uuid.uuid4())
-        s = trains.core.models.Station(name=sn)
+        s = trains.models.Station(name=sn)
         s.save()
         dn = str(uuid.uuid4())
-        d = trains.core.models.Direction(name=dn)
+        d = trains.models.Direction(name=dn)
         d.save()
         ds = d.directionstation_set.create(station=s, position=5)
-        ds = trains.core.models.DirectionStation.objects.filter(
+        ds = trains.models.DirectionStation.objects.filter(
             pk=ds.id).first()
         self.assertEqual(ds.direction.name, dn)
         self.assertEqual(ds.station.name, sn)
@@ -69,13 +69,13 @@ class DirectionStationModelTests(django.test.TestCase):
 
     def test__via_station(self):
         sn = str(uuid.uuid4())
-        s = trains.core.models.Station(name=sn)
+        s = trains.models.Station(name=sn)
         s.save()
         dn = str(uuid.uuid4())
-        d = trains.core.models.Direction(name=dn)
+        d = trains.models.Direction(name=dn)
         d.save()
         ds = s.directionstation_set.create(direction=d, position=6)
-        ds = trains.core.models.DirectionStation.objects.filter(
+        ds = trains.models.DirectionStation.objects.filter(
             pk=ds.id).first()
         self.assertEqual(ds.direction.name, dn)
         self.assertEqual(ds.station.name, sn)
@@ -85,15 +85,15 @@ class DirectionStationModelTests(django.test.TestCase):
 class RouteModelTests(django.test.TestCase):
     def test__has_fields(self):
         sn = str(uuid.uuid4())
-        s = trains.core.models.Station(name=sn)
+        s = trains.models.Station(name=sn)
         s.save()
         dn = str(uuid.uuid4())
-        d = trains.core.models.Direction(name=dn)
+        d = trains.models.Direction(name=dn)
         d.save()
         rn = str(uuid.uuid4())
-        r = trains.core.models.Route(name=rn, direction=d, start_station=s, end_station=s)
+        r = trains.models.Route(name=rn, direction=d, start_station=s, end_station=s)
         r.save()
-        r = trains.core.models.Route.objects.get(pk=r.id)
+        r = trains.models.Route.objects.get(pk=r.id)
         self.assertEqual(r.name, rn)
         self.assertEqual(r.direction.name, dn)
         self.assertEqual(r.start_station.name, sn)
@@ -103,21 +103,21 @@ class RouteModelTests(django.test.TestCase):
 class RouteStationModelTests(django.test.TestCase):
     def test__direct_creation(self):
         sn = str(uuid.uuid4())
-        s = trains.core.models.Station(name=sn)
+        s = trains.models.Station(name=sn)
         s.save()
         dn = str(uuid.uuid4())
-        d = trains.core.models.Direction(name=dn)
+        d = trains.models.Direction(name=dn)
         d.save()
         rn = str(uuid.uuid4())
-        r = trains.core.models.Route(name=rn, direction=d, start_station=s, end_station=s)
+        r = trains.models.Route(name=rn, direction=d, start_station=s, end_station=s)
         r.save()
-        rs = trains.core.models.RouteStation(
+        rs = trains.models.RouteStation(
             route=r, station=s,
             wait_time=datetime.timedelta(1),
             move_time=datetime.timedelta(2),
         )
         rs.save()
-        rs = trains.core.models.RouteStation.objects.filter(pk=rs.id).first()
+        rs = trains.models.RouteStation.objects.filter(pk=rs.id).first()
         self.assertEqual(rs.route.name, rn)
         self.assertEqual(rs.station.name, sn)
         self.assertEqual(rs.wait_time, datetime.timedelta(1))
@@ -125,20 +125,20 @@ class RouteStationModelTests(django.test.TestCase):
 
     def test__via_route(self):
         sn = str(uuid.uuid4())
-        s = trains.core.models.Station(name=sn)
+        s = trains.models.Station(name=sn)
         s.save()
         dn = str(uuid.uuid4())
-        d = trains.core.models.Direction(name=dn)
+        d = trains.models.Direction(name=dn)
         d.save()
         rn = str(uuid.uuid4())
-        r = trains.core.models.Route(name=rn, direction=d, start_station=s, end_station=s)
+        r = trains.models.Route(name=rn, direction=d, start_station=s, end_station=s)
         r.save()
         rs = r.routestation_set.create(
             station=s,
             wait_time=datetime.timedelta(5),
             move_time=datetime.timedelta(6),
         )
-        rs = trains.core.models.RouteStation.objects.filter(pk=rs.id).first()
+        rs = trains.models.RouteStation.objects.filter(pk=rs.id).first()
         self.assertEqual(rs.route.name, rn)
         self.assertEqual(rs.station.name, sn)
         self.assertEqual(rs.wait_time, datetime.timedelta(5))
@@ -146,20 +146,20 @@ class RouteStationModelTests(django.test.TestCase):
 
     def test__via_station(self):
         sn = str(uuid.uuid4())
-        s = trains.core.models.Station(name=sn)
+        s = trains.models.Station(name=sn)
         s.save()
         dn = str(uuid.uuid4())
-        d = trains.core.models.Direction(name=dn)
+        d = trains.models.Direction(name=dn)
         d.save()
         rn = str(uuid.uuid4())
-        r = trains.core.models.Route(name=rn, direction=d, start_station=s, end_station=s)
+        r = trains.models.Route(name=rn, direction=d, start_station=s, end_station=s)
         r.save()
         rs = s.routestation_set.create(
             route=r,
             wait_time=datetime.timedelta(3),
             move_time=datetime.timedelta(4),
         )
-        rs = trains.core.models.RouteStation.objects.filter(pk=rs.id).first()
+        rs = trains.models.RouteStation.objects.filter(pk=rs.id).first()
         self.assertEqual(rs.route.name, rn)
         self.assertEqual(rs.station.name, sn)
         self.assertEqual(rs.wait_time, datetime.timedelta(3))
@@ -169,61 +169,61 @@ class RouteStationModelTests(django.test.TestCase):
 class WeekdayTests(django.test.TestCase):
     def test__conversion__int(self):
         wd = filter(
-            lambda x: x[0] == trains.core.tools.Weekday.wednesday,
-            trains.core.tools.Weekday.choices
+            lambda x: x[0] == trains.tools.Weekday.wednesday,
+            trains.tools.Weekday.choices
         )[0][1]
         self.assertEqual(
             wd,
-            trains.core.tools.Weekday(trains.core.tools.Weekday.wednesday)
+            trains.tools.Weekday(trains.tools.Weekday.wednesday)
         )
 
     def test__conversion__str(self):
         wd = filter(
-            lambda x: x[0] == trains.core.tools.Weekday.monday,
-            trains.core.tools.Weekday.choices
+            lambda x: x[0] == trains.tools.Weekday.monday,
+            trains.tools.Weekday.choices
         )[0][1]
         self.assertEqual(
             wd,
-            trains.core.tools.Weekday('0')
+            trains.tools.Weekday('0')
         )
 
     def test__conversion__invalid(self):
-        self.assertEqual(trains.core.tools.Weekday(-1), None)
-        self.assertEqual(trains.core.tools.Weekday('7'), None)
-        self.assertEqual(trains.core.tools.Weekday('a'), None)
+        self.assertEqual(trains.tools.Weekday(-1), None)
+        self.assertEqual(trains.tools.Weekday('7'), None)
+        self.assertEqual(trains.tools.Weekday('a'), None)
 
 
 class TimetableModelTests(django.test.TestCase):
     def test__direct_creation(self):
         sn = str(uuid.uuid4())
-        s = trains.core.models.Station(name=sn)
+        s = trains.models.Station(name=sn)
         s.save()
         dn = str(uuid.uuid4())
-        d = trains.core.models.Direction(name=dn)
+        d = trains.models.Direction(name=dn)
         d.save()
         rn = str(uuid.uuid4())
-        r = trains.core.models.Route(name=rn, direction=d, start_station=s, end_station=s)
+        r = trains.models.Route(name=rn, direction=d, start_station=s, end_station=s)
         r.save()
-        tt = trains.core.models.Timetable(route=r, weekday=0, time=datetime.time(0, 1))
+        tt = trains.models.Timetable(route=r, weekday=0, time=datetime.time(0, 1))
         tt.save()
-        tt = trains.core.models.Timetable.objects.filter(pk=tt.id).first()
+        tt = trains.models.Timetable.objects.filter(pk=tt.id).first()
         self.assertEqual(tt.route.name, rn)
         self.assertEqual(tt.weekday, 0)
         self.assertEqual(tt.time, datetime.time(0, 1))
 
     def test__via_route(self):
         sn = str(uuid.uuid4())
-        s = trains.core.models.Station(name=sn)
+        s = trains.models.Station(name=sn)
         s.save()
         dn = str(uuid.uuid4())
-        d = trains.core.models.Direction(name=dn)
+        d = trains.models.Direction(name=dn)
         d.save()
         rn = str(uuid.uuid4())
-        r = trains.core.models.Route(name=rn, direction=d, start_station=s, end_station=s)
+        r = trains.models.Route(name=rn, direction=d, start_station=s, end_station=s)
         r.save()
         tt = r.timetable_set.create(weekday=0, time=datetime.time(0, 1))
         tt.save()
-        tt = trains.core.models.Timetable.objects.filter(pk=tt.id).first()
+        tt = trains.models.Timetable.objects.filter(pk=tt.id).first()
         self.assertEqual(tt.route.name, rn)
         self.assertEqual(tt.weekday, 0)
         self.assertEqual(tt.time, datetime.time(0, 1))

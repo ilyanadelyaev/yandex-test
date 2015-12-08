@@ -2,7 +2,7 @@ import uuid
 
 import django.test
 
-import trains.core.models
+import trains.models
 
 
 class ViewTests(django.test.TestCase):
@@ -10,17 +10,17 @@ class ViewTests(django.test.TestCase):
         self.client = django.test.Client()
         #
         sn = str(uuid.uuid4())
-        s = trains.core.models.Station(name=sn)
+        s = trains.models.Station(name=sn)
         s.save()
         self.station_id = s.id
         #
         dn = str(uuid.uuid4())
-        d = trains.core.models.Direction(name=dn)
+        d = trains.models.Direction(name=dn)
         d.save()
         self.direction_id = d.id
         #
         rn = str(uuid.uuid4())
-        r = trains.core.models.Route(name=rn, direction=d, start_station=s, end_station=s)
+        r = trains.models.Route(name=rn, direction=d, start_station=s, end_station=s)
         r.save()
         self.route_id = r.id
 

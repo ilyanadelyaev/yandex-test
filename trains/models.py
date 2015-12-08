@@ -1,6 +1,6 @@
 import django.db
 
-import trains.core.tools
+import trains.tools
 
 
 class Station(django.db.models.Model):
@@ -65,7 +65,7 @@ class RouteStation(django.db.models.Model):
 class Timetable(django.db.models.Model):
     route = django.db.models.ForeignKey(Route)
     weekday = django.db.models.PositiveSmallIntegerField(
-        choices=trains.core.tools.Weekday.choices)
+        choices=trains.tools.Weekday.choices)
     time = django.db.models.TimeField()
 
     def __unicode__(self):
