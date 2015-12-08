@@ -18,3 +18,7 @@ RUN SERVER
 
 CLEANUP
 ./sh/cleanup.sh
+
+TESTS
+pip install pep8
+./sh/test.sh

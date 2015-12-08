@@ -20,7 +20,8 @@ class ViewTests(django.test.TestCase):
         self.direction_id = d.id
         #
         rn = str(uuid.uuid4())
-        r = trains.models.Route(name=rn, direction=d, start_station=s, end_station=s)
+        r = trains.models.Route(
+            name=rn, direction=d, start_station=s, end_station=s)
         r.save()
         self.route_id = r.id
 

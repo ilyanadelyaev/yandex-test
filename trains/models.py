@@ -9,7 +9,7 @@ class Station(django.db.models.Model):
     def __unicode__(self):
         return '{} [{}]'.format(self.name, self.id)
 
-    #TODO: drop me
+    # TODO: drop me
     def directionstation_list(self):
         return self.directionstation_set.all()
 
@@ -39,8 +39,10 @@ class DirectionStation(django.db.models.Model):
 class Route(django.db.models.Model):
     name = django.db.models.CharField(max_length=60)
     direction = django.db.models.ForeignKey(Direction)
-    start_station = django.db.models.ForeignKey(Station, related_name='route_start_station_set')
-    end_station = django.db.models.ForeignKey(Station, related_name='route_end_station_set')
+    start_station = django.db.models.ForeignKey(
+        Station, related_name='route_start_station_set')
+    end_station = django.db.models.ForeignKey(
+        Station, related_name='route_end_station_set')
 
     def __unicode__(self):
         return '{} [{}]'.format(self.name, self.id)
@@ -59,7 +61,8 @@ class RouteStation(django.db.models.Model):
     move_time = django.db.models.DurationField()
 
     def __unicode__(self):
-        return '{} - {} - {} [{}]'.format(self.station, self.route, self.position, self.id)
+        return '{} - {} - {} [{}]'.format(
+            self.station, self.route, self.position, self.id)
 
 
 class Timetable(django.db.models.Model):
@@ -69,4 +72,5 @@ class Timetable(django.db.models.Model):
     time = django.db.models.TimeField()
 
     def __unicode__(self):
-        return '{} - {} : {} [{}]'.format(self.route, self.weekday, self.time, self.id)
+        return '{} - {} : {} [{}]'.format(
+            self.route, self.weekday, self.time, self.id)

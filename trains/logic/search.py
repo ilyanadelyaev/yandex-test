@@ -44,7 +44,8 @@ def __find_routes(start, end, weekday, timeinterval):
         from
             {timetable} tt left join
             (
-            -- intersect two RouteStation tables to find sutable route for start/end station pair
+            -- intersect two RouteStation tables
+            -- to find sutable route for start/end station pair
             -- add DirectionStation table for positions
             select
                 r.id route_id
@@ -88,40 +89,57 @@ def __find_routes(start, end, weekday, timeinterval):
             on
                 r.id = rr.route_id
             where
-                -- fetch station positions for RouteStation from DirectionStation
+                -- fetch station positions
+                -- for RouteStation from DirectionStation
                 (
                     (
                         (select position from {directionstation}
-                            where direction_id = r.direction_id and station_id = r.start_station_id)
+                            where direction_id = r.direction_id
+                            and
+                            station_id = r.start_station_id)
                         >
                         (select position from {directionstation}
-                            where direction_id = r.direction_id and station_id = r.end_station_id)
+                            where direction_id = r.direction_id
+                            and
+                            station_id = r.end_station_id)
                     )
                     and
                     (
                         (select position from {directionstation}
-                            where direction_id = r.direction_id and station_id = {start})
+                            where direction_id = r.direction_id
+                            and
+                            station_id = {start})
                         >
                         (select position from {directionstation}
-                            where direction_id = r.direction_id and station_id = {end})
+                            where direction_id = r.direction_id
+                            and
+                            station_id = {end})
                     )
                 )
                 or
                 (
                     (
                         (select position from {directionstation}
-                            where direction_id = r.direction_id and station_id = r.start_station_id)
+                            where direction_id = r.direction_id
+                            and
+                            station_id = r.start_station_id)
                         <
                         (select position from {directionstation}
-                            where direction_id = r.direction_id and station_id = r.end_station_id)
+                            where direction_id = r.direction_id
+                            and
+                            station_id = r.end_station_id)
                     )
                     and
                     (
                         (select position from {directionstation}
-                            where direction_id = r.direction_id and station_id = {start})
+                            where direction_id = r.direction_id
+                            and
+                            station_id = {start})
                         <
                         (select position from {directionstation}
-                            where direction_id = r.direction_id and station_id = {end})
+                            where direction_id = r.direction_id
+                            and
+                            station_id = {end})
                     )
                 )
             ) rrr
@@ -156,7 +174,8 @@ def search_routes(start, end, date, timeinterval):
         start = int(start)
     except (ValueError, TypeError):
         raise trains.logic.errors.InvalidSearchArguments(
-            'Invalid: START argument must be INT value. START = "{}"'.format(start))
+            'Invalid: START argument must be INT value.'
+            ' START = "{}"'.format(start))
     try:
         end = int(end)
     except (ValueError, TypeError):
@@ -166,15 +185,20 @@ def search_routes(start, end, date, timeinterval):
         weekday = datetime.datetime.strptime(date, '%m/%d/%Y').date().weekday()
     except ValueError:
         raise trains.logic.errors.InvalidSearchArguments(
-            'Invalid: DATE argument must be "MM/DD/YYYY". DATE = "{}"'.format(date))
+            'Invalid: DATE argument must be "MM/DD/YYYY".'
+            ' DATE = "{}"'.format(date))
 
     if timeinterval is None:
         timeinterval = (0, 24)
     try:
-        timeinterval = (datetime.time(timeinterval[0], 0), datetime.time(timeinterval[1] - 1, 59))
+        timeinterval = (
+            datetime.time(timeinterval[0], 0),
+            datetime.time(timeinterval[1] - 1, 59)
+        )
     except ValueError:
         raise trains.logic.errors.InvalidSearchArguments(
-            'Invalid: TIMEINTERVAL values must be [ (0..24), (0..24) ]. TIMEINTERVAL = "{}"'.format(timeinterval))
+            'Invalid: TIMEINTERVAL values must be [ (0..24), (0..24) ].'
+            ' TIMEINTERVAL = "{}"'.format(timeinterval))
 
     if start == end:
         raise trains.logic.errors.InvalidSearchArguments(
@@ -204,7 +228,8 @@ def search_routes(start, end, date, timeinterval):
     _process(start, nodes[:])
 
     if not paths:
-        raise trains.logic.errors.UnboundedStations('Unbounded stations: "{}" and "{}"'.format(start, end))
+        raise trains.logic.errors.UnboundedStations(
+            'Unbounded stations: "{}" and "{}"'.format(start, end))
 
     # TODO: give path size by time
     path = min(paths, key=len)
@@ -226,7 +251,10 @@ def search_routes(start, end, date, timeinterval):
     pp.append((st, dr, ed))
 
     # find suitable routes
-    routes = [(s, e, d, __find_routes(s, e, weekday, timeinterval)) for s, d, e in pp]
+    routes = [
+        (s, e, d, __find_routes(s, e, weekday, timeinterval))
+        for s, d, e in pp
+    ]
 
     def __to_models(routes):
         ret = []

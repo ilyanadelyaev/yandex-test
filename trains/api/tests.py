@@ -35,10 +35,12 @@ class SearchAPITests(django.test.TestCase):
             ('Berlin - Paris', 'Paris', 1),
         ]
         for direction, station, position in directionstation:
-            trains.models.Direction.objects.filter(name=direction).first().directionstation_set.create(
-                    station=trains.models.Station.objects.filter(name=station).first(),
+            trains.models.Direction.objects.get(
+                name=direction).directionstation_set.create(
+                    station=trains.models.Station.objects.get(
+                        name=station),
                     position=position,
-            )
+                )
         #
         routes = [
             ('Prague - Berlin', 'Prague - Berlin', 'Prague', 'Berlin'),
@@ -49,9 +51,12 @@ class SearchAPITests(django.test.TestCase):
         for route, direction, start_station, end_station, in routes:
             trains.models.Route(
                 name=route,
-                direction=trains.models.Direction.objects.filter(name=direction).first(),
-                start_station=trains.models.Station.objects.filter(name=start_station).first(),
-                end_station=trains.models.Station.objects.filter(name=end_station).first(),
+                direction=trains.models.Direction.objects.get(
+                    name=direction),
+                start_station=trains.models.Station.objects.get(
+                    name=start_station),
+                end_station=trains.models.Station.objects.get(
+                    name=end_station),
             ).save()
         #
         routestation = [
@@ -67,14 +72,18 @@ class SearchAPITests(django.test.TestCase):
         ]
         for route, station, wait_time, move_time in routestation:
             wait_time = datetime.datetime.strptime(wait_time, '%H:%M')
-            wait_time = datetime.timedelta(hours=wait_time.hour, minutes=wait_time.minute)
+            wait_time = datetime.timedelta(
+                hours=wait_time.hour, minutes=wait_time.minute)
             move_time = datetime.datetime.strptime(move_time, '%H:%M')
-            move_time = datetime.timedelta(hours=move_time.hour, minutes=move_time.minute)
-            trains.models.Route.objects.filter(name=route).first().routestation_set.create(
-                station=trains.models.Station.objects.filter(name=station).first(),
-                wait_time=wait_time,
-                move_time=move_time,
-            )
+            move_time = datetime.timedelta(
+                hours=move_time.hour, minutes=move_time.minute)
+            trains.models.Route.objects.get(
+                name=route).routestation_set.create(
+                    station=trains.models.Station.objects.get(
+                        name=station),
+                    wait_time=wait_time,
+                    move_time=move_time,
+                )
         #
         timetable = [
             ('Prague - Berlin', 0, '08:00'),
@@ -84,7 +93,7 @@ class SearchAPITests(django.test.TestCase):
         ]
         for route, weekday, time in timetable:
             time = datetime.datetime.strptime(time, '%H:%M')
-            trains.models.Route.objects.filter(name=route).first().timetable_set.create(
+            trains.models.Route.objects.get(name=route).timetable_set.create(
                 weekday=weekday,
                 time=time,
             )
@@ -96,17 +105,29 @@ class SearchAPITests(django.test.TestCase):
         r = trains.models.Route.objects.get(name='Berlin - Prague')
         tt = trains.models.Timetable.objects.filter(route=r).first()
         #
-        resp = self.client.get('/api/search/', {'start_station': s1.id, 'end_station': s2.id, 'date': '11/16/2015'})
+        resp = self.client.get(
+            '/api/search/',
+            {
+                'start_station': s1.id,
+                'end_station': s2.id,
+                'date': '11/16/2015',
+            },
+        )
         self.assertEqual(resp.status_code, 200)
         content = json.loads(resp.content)
         #
         self.assertIn('path', content)
-        self.assertEqual(content['path'][0]['start_station']['name'], s1.name)
-        self.assertEqual(content['path'][0]['end_station']['name'], s2.name)
-        self.assertEqual(content['path'][0]['direction']['name'], d.name)
+        self.assertEqual(
+            content['path'][0]['start_station']['name'], s1.name)
+        self.assertEqual(
+            content['path'][0]['end_station']['name'], s2.name)
+        self.assertEqual(
+            content['path'][0]['direction']['name'], d.name)
         self.assertIn('routes', content['path'][0])
-        self.assertEqual(content['path'][0]['routes'][0]['route']['name'], r.name)
-        self.assertEqual(content['path'][0]['routes'][0]['time'], str(tt.time))
+        self.assertEqual(
+            content['path'][0]['routes'][0]['route']['name'], r.name)
+        self.assertEqual(
+            content['path'][0]['routes'][0]['time'], str(tt.time))
 
     def test__search__multiple_directions(self):
         s1 = trains.models.Station.objects.get(name='Paris')
@@ -119,20 +140,37 @@ class SearchAPITests(django.test.TestCase):
         tt1 = trains.models.Timetable.objects.filter(route=r1).first()
         tt2 = trains.models.Timetable.objects.filter(route=r2).first()
         #
-        resp = self.client.get('/api/search/', {'start_station': s1.id, 'end_station': s3.id, 'date': '11/16/2015'})
+        resp = self.client.get(
+            '/api/search/',
+            {
+                'start_station': s1.id,
+                'end_station': s3.id,
+                'date': '11/16/2015',
+            },
+        )
         self.assertEqual(resp.status_code, 200)
         content = json.loads(resp.content)
         #
-        self.assertEqual(content['path'][0]['start_station']['name'], s1.name)
-        self.assertEqual(content['path'][0]['end_station']['name'], s2.name)
-        self.assertEqual(content['path'][0]['direction']['name'], d1.name)
-        self.assertEqual(content['path'][0]['routes'][0]['route']['name'], r1.name)
-        self.assertEqual(content['path'][0]['routes'][0]['time'], str(tt1.time))
-        self.assertEqual(content['path'][1]['start_station']['name'], s2.name)
-        self.assertEqual(content['path'][1]['end_station']['name'], s3.name)
-        self.assertEqual(content['path'][1]['direction']['name'], d2.name)
-        self.assertEqual(content['path'][1]['routes'][0]['route']['name'], r2.name)
-        self.assertEqual(content['path'][1]['routes'][0]['time'], str(tt2.time))
+        self.assertEqual(
+            content['path'][0]['start_station']['name'], s1.name)
+        self.assertEqual(
+            content['path'][0]['end_station']['name'], s2.name)
+        self.assertEqual(
+            content['path'][0]['direction']['name'], d1.name)
+        self.assertEqual(
+            content['path'][0]['routes'][0]['route']['name'], r1.name)
+        self.assertEqual(
+            content['path'][0]['routes'][0]['time'], str(tt1.time))
+        self.assertEqual(
+            content['path'][1]['start_station']['name'], s2.name)
+        self.assertEqual(
+            content['path'][1]['end_station']['name'], s3.name)
+        self.assertEqual(
+            content['path'][1]['direction']['name'], d2.name)
+        self.assertEqual(
+            content['path'][1]['routes'][0]['route']['name'], r2.name)
+        self.assertEqual(
+            content['path'][1]['routes'][0]['time'], str(tt2.time))
 
     def test__search__empty_arguments_list(self):
         resp = self.client.get('/api/search/')
@@ -142,14 +180,28 @@ class SearchAPITests(django.test.TestCase):
         self.assertIn('error', content)
 
     def test__search__invalid_arguments_list(self):
-        resp = self.client.get('/api/search/', {'start_station': 'a', 'end_station': 'b', 'date': '11/16/2015'})
+        resp = self.client.get(
+            '/api/search/',
+            {
+                'start_station': 'a',
+                'end_station': 'b',
+                'date': '11/16/2015',
+            },
+        )
         self.assertEqual(resp.status_code, 200)
         content = json.loads(resp.content)
         #
         self.assertIn('error', content)
 
     def test__search__equal_station_ids(self):
-        resp = self.client.get('/api/search/', {'start_station': 1, 'end_station': 1, 'date': '11/16/2015'})
+        resp = self.client.get(
+            '/api/search/',
+            {
+                'start_station': 1,
+                'end_station': 1,
+                'date': '11/16/2015',
+            },
+        )
         self.assertEqual(resp.status_code, 200)
         content = json.loads(resp.content)
         #
@@ -157,9 +209,17 @@ class SearchAPITests(django.test.TestCase):
 
     def test__search__invalid__no_bounds_stations(self):
         s1 = trains.models.Station.objects.get(name='Paris')
-        s2 = trains.models.Station.objects.get(name='International Space Station')
+        s2 = trains.models.Station.objects.get(
+            name='International Space Station')
         #
-        resp = self.client.get('/api/search/', {'start_station': s1.id, 'end_station': s2.id, 'date': '11/16/2015'})
+        resp = self.client.get(
+            '/api/search/',
+            {
+                'start_station': s1.id,
+                'end_station': s2.id,
+                'date': '11/16/2015',
+            },
+        )
         self.assertEqual(resp.status_code, 200)
         content = json.loads(resp.content)
         #
@@ -232,7 +292,8 @@ class ViewAPITests(django.test.TestCase):
         d = trains.models.Direction(name=dn)
         d.save()
         rn = str(uuid.uuid4())
-        r = trains.models.Route(name=rn, direction=d, start_station=s, end_station=s)
+        r = trains.models.Route(
+            name=rn, direction=d, start_station=s, end_station=s)
         r.save()
         #
         resp = self.client.get('/api/route/')
@@ -255,7 +316,8 @@ class ViewAPITests(django.test.TestCase):
         d = trains.models.Direction(name=dn)
         d.save()
         rn = str(uuid.uuid4())
-        r = trains.models.Route(name=rn, direction=d, start_station=s, end_station=s)
+        r = trains.models.Route(
+            name=rn, direction=d, start_station=s, end_station=s)
         r.save()
         tt = r.timetable_set.create(weekday=0, time=datetime.time(0, 0))
         tt.save()
