@@ -101,3 +101,44 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.8/howto/static-files/
 
 STATIC_URL = '/static/'
+
+
+# Logging
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format':
+            "[%(asctime)s] %(levelname)s [%(name)s:%(lineno)s] %(message)s",
+            'datefmt':
+            "%Y/%m/%d %H:%M:%S"
+        },
+    },
+    'handlers': {
+        'system': {
+            'level': 'DEBUG',
+            'class': 'logging.FileHandler',
+            'filename': 'logs/system.log',
+            'formatter': 'verbose'
+        },
+        'trains': {
+            'level': 'DEBUG',
+            'class': 'logging.FileHandler',
+            'filename': 'logs/trains.log',
+            'formatter': 'verbose'
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['system'],
+            'propagate': True,
+            'level': 'DEBUG',
+        },
+        'trains': {
+            'handlers': ['trains'],
+            'level': 'DEBUG',
+        },
+    }
+}
