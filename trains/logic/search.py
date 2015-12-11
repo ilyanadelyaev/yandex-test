@@ -12,6 +12,11 @@ def __nodes():
     --
     only near nodes
     st_1 and st_2: (pos1 = pos2 - 1) or (pos1 = pos2 + 1)
+    --
+    node is tuple, len=3:
+    0 - first_point (Station.ID)
+    1 - direction (Direction_ID)
+    2 - second_point (Station_ID)
     """
     cursor = django.db.connection.cursor()
     cursor.execute("""
@@ -29,6 +34,58 @@ def __nodes():
         trains.models.DirectionStation._meta.db_table,
     ))
     return cursor.fetchall()
+
+
+def __find_paths(start_point, end_point, nodes, path=None, points=None):
+    """
+    Find shortest path between start and end points via graph
+
+    - nodes - all nodes from direction's table / see __nodes() for more info
+    - start_point - lookup from this point
+    - end_point - lookup till this point
+    - path - current path
+    - points - processed points
+    """
+    # init start conditions
+    if path is None:
+        path = []
+    if points is None:
+        points = set((start_point,))
+    result = []
+
+    # get nodes belongs to start_point
+    nearest_nodes = filter(lambda x: x[0] == start_point, nodes)
+
+    # recurcively search nearest nodes for end_point
+    # node - see docstring
+    for node in nearest_nodes:
+        # node processed - remove to exclude repeated paths
+        nodes.remove(node)
+
+        # next point = node second point
+        next_point = node[2]
+
+        # already processed for current path
+        if next_point in points:
+            continue
+
+        # path found. append to paths to return
+        if next_point == end_point:
+            # TODO: if len(path = [node]) == 1: return
+            result.append(path + [node])
+
+        # make search again for next point
+        result.extend(
+            __find_paths(
+                next_point,  # next point as start point
+                end_point,  # look up till end point
+                nodes[:],  # copy nodes to make changes for current path
+                path + [node],  # current path
+                points | set((next_point,)),  # processed points
+            )
+        )
+
+    return result
 
 
 def __find_routes(start, end, weekday, timeinterval):
@@ -169,13 +226,41 @@ def __find_routes(start, end, weekday, timeinterval):
     return cursor.fetchall()
 
 
+def __raw_routes_to_models(raw_routes):
+    """
+    Convert Station_ID, Direction_ID and Route_ID to models
+    """
+    ret = []
+    for start_point, end_point, direction, routes_with_time in raw_routes:
+        ret.append({
+            'start_station': trains.models.Station.objects.get(pk=start_point),
+            'end_station': trains.models.Station.objects.get(pk=end_point),
+            'direction': trains.models.Direction.objects.get(pk=direction),
+            # split routes with time
+            'routes': [{
+                'route': trains.models.Route.objects.get(pk=route),
+                'time': time,
+            } for route, time in routes_with_time],
+        })
+    return ret
+
+
 def search_routes(start, end, date, timeinterval):
+    """
+    Search routes from start to end station
+    for selected weekday and time interval
+
+    Return dict with models
+    """
+
+    # convert start and end points to integer
     try:
         start = int(start)
     except (ValueError, TypeError):
         raise trains.logic.errors.InvalidSearchArguments(
             'Invalid: START argument must be INT value.'
             ' START = "{}"'.format(start))
+    #
     try:
         end = int(end)
     except (ValueError, TypeError):
@@ -187,7 +272,12 @@ def search_routes(start, end, date, timeinterval):
         raise trains.logic.errors.InvalidSearchArguments(
             'Invalid: DATE argument must be "MM/DD/YYYY".'
             ' DATE = "{}"'.format(date))
+    #
+    if start == end:
+        raise trains.logic.errors.InvalidSearchArguments(
+            'Invalid: START equal END : "{}" == "{}"'.format(start, end))
 
+    # set time interval to whole day if not present
     if timeinterval is None:
         timeinterval = (0, 24)
     try:
@@ -200,79 +290,56 @@ def search_routes(start, end, date, timeinterval):
             'Invalid: TIMEINTERVAL values must be [ (0..24), (0..24) ].'
             ' TIMEINTERVAL = "{}"'.format(timeinterval))
 
-    if start == end:
-        raise trains.logic.errors.InvalidSearchArguments(
-            'Invalid: START equal END : "{}" == "{}"'.format(start, end))
-
+    # fetch all graph nodes from database
     nodes = __nodes()
 
-    paths = []
-
-    def _process(p, nodes, path=None, points=None):
-        if path is None:
-            path = []
-        if points is None:
-            points = set((p,))
-        pn = filter(lambda x: x[0] == p, nodes)
-        append = False
-        for n in pn:
-            nodes.remove(n)
-            pp = n[2]
-            if pp in points:
-                continue
-            if pp == end:
-                # TODO: if len(path = [n]) == 1: return
-                paths.append(path + [n])
-            _process(pp, nodes[:], path + [n], points | set((pp,)))
-
-    _process(start, nodes[:])
+    # find paths from start to end points using nodes
+    paths = __find_paths(start, end, nodes[:])
 
     if not paths:
         raise trains.logic.errors.UnboundedStations(
             'Unbounded stations: "{}" and "{}"'.format(start, end))
 
     # TODO: give path size by time
-    path = min(paths, key=len)
+    raw_path = min(paths, key=len)
 
-    # remove middle nodes from path
-    pp = []
-    st, dr, ed = (None,) * 3
-    for p in path:
-        s, d, e = p
-        if dr is not None and dr != d:
-            pp.append((st, dr, ed))
-            st = s
-            dr = d
-        if dr is None:
-            dr = d
-        if st is None:
-            st = s
-        ed = e
-    pp.append((st, dr, ed))
+    # clean raw path - keep only start and end point for direction
+    path = []
+    start_point, direction, end_point = (None,) * 3
+    for node in raw_path:
+        #
+        s, d, e = node
+        # next direction on route
+        if direction is not None and direction != d:
+            path.append((start_point, direction, end_point))
+            start_point = s
+            direction = d
+        # init input
+        if direction is None:
+            direction = d
+        if start_point is None:
+            start_point = s
+        #
+        end_point = e
+    # last point
+    path.append((start_point, direction, end_point))
 
-    # find suitable routes
-    routes = [
-        (s, e, d, __find_routes(s, e, weekday, timeinterval))
-        for s, d, e in pp
+    # find raw routes for path
+    # include all variants for all days and times
+    # will splitted in next section
+    raw_routes = [
+        (
+            start_point,
+            end_point,
+            direction,
+            __find_routes(
+                start_point,
+                end_point,
+                weekday,
+                timeinterval
+            )
+        )
+        for start_point, direction, end_point in path
     ]
 
-    def __to_models(routes):
-        ret = []
-        for i in routes:
-            s, e, d, rr = i
-            ret.append({
-                'start_station': trains.models.Station.objects.get(pk=s),
-                'end_station': trains.models.Station.objects.get(pk=e),
-                'direction': trains.models.Direction.objects.get(pk=d),
-                'routes': [{
-                    'route': trains.models.Route.objects.get(pk=r),
-                    'time': t,
-                } for r, t in rr],
-            })
-        return ret
-
-    return __to_models(routes)
-
-
-def check_consistency():
-    pass
+    return __raw_routes_to_models(raw_routes)
